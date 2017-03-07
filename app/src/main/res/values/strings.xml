@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">album</string>
+    <string name="title_activity_list_view__main">ListView_MainActivity</string>
+</resources>
