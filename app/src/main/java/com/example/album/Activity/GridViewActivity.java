@@ -1,42 +1,35 @@
 package com.example.album.Activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.GridView;
 
 import com.example.album.Adapter.GridViewAdapter;
 import com.example.album.R;
-import com.example.album.bean.ImageFolder;
+import com.example.album.Util.ImageUtil;
 
-import java.util.List;
+import java.io.File;
 
 public class GridViewActivity extends Activity {
 
-    List<ImageFolder> list;
-    GridViewAdapter myAdapter;
+    private GridViewAdapter myAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.gridview);
-//        initPhoto();
-//        getImage();
-//        myAdapter = new GridViewAdapter(this,list);
-//        GridView gridView = (GridView) findViewById(R.id.gridView);
-//        gridView.setAdapter(myAdapter);
-
+        initGridViewAdapter();
+        GridView gridView = (GridView) findViewById(R.id.gridView);
+        gridView.setAdapter(myAdapter);
     }
 
-//    public void getImage(){
-//        Cursor cursor = getContentResolver().query(
-//                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, null, null, null);
-//        //遍历相册
-//        while (cursor.moveToNext()) {
-//            String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-//            File file = new File(path);
-//            //将图片路径添加到集合
-//            list.add(file);
-//        }
-//        cursor.close();
-//    }
+    public void initGridViewAdapter() {
+        Intent intent = getIntent();
+        String firstImagePath = intent.getStringExtra("firstImagePath");
+        File file = new File(firstImagePath);
+        ImageUtil imageUtil = new ImageUtil(this);
+        myAdapter = new GridViewAdapter(this,imageUtil.getGridViewFolderData(file));
+    }
 
 }

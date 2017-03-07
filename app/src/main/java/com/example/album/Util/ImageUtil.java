@@ -20,10 +20,7 @@ import java.util.Set;
 
 public class ImageUtil {
 
-    Context context;
-    ListViewItem[] listViewItems;
-//    List<ImageFolder> folders = new ArrayList<>();
-
+    private Context context;
 
     public ImageUtil(Context context) {
         this.context = context;
@@ -39,6 +36,7 @@ public class ImageUtil {
         File parentFile_Item;
         int parentFile_ImageNum;
 
+//        系统相册图片和其他目录下的所有图片，并按照时间倒叙排列
         Cursor cursor = context.getContentResolver()
                 .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                         new String[]{MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME,
@@ -61,7 +59,7 @@ public class ImageUtil {
             }
         }
         cursor.close();
-        listViewItems = new ListViewItem[items.size()];
+        ListViewItem[] listViewItems = new ListViewItem[items.size()];
         for (int i = 0; i < listViewItems.length; i++) {
             listViewItems[i] = items.get(i);
         }
@@ -84,47 +82,31 @@ public class ImageUtil {
         return parentFile_ItemNum.length;
 
     }
-//
-//    //获取相册分类合集
-//    public List<ImageFolder> getImageUrlSet() {
-//        Cursor cursor = context.getContentResolver()
-//                .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, new String[]{
-//                        MediaStore.Images.Thumbnails.DATA,
-//                        MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME,
-//                        MediaStore.Images.ImageColumns.BUCKET_ID,
-//                }, null, null, null);
-//        while (cursor.moveToNext()) {
-//            String imagePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Thumbnails.DATA));
-//            String bucket_Name = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME));
-//            int bucket_Id = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.ImageColumns.BUCKET_ID));
-//            //将图片路径分类存储
-//            saveData(imagePath,bucket_Name,bucket_Id);
-//        }
-//        cursor.close();
-//        return folders;
-//    }
-//
-//    public void saveData(String imagePath,String bucket_Name,int bucket_Id){
-//        if (folders.isEmpty()){
-//            buildImageFolder(imagePath,bucket_Name,bucket_Id);
-//        }else{
-//            for (int i = 0; i < folders.size(); i++) {
-//                if (folders.get(i).getBucket_id()!=bucket_Id){
-//                    buildImageFolder(imagePath,bucket_Name,bucket_Id);
-//                }else {
-//                    folders.get(i).buildImageList(imagePath);
-//                    return;
-//                }
-//            }
-//        }
-//    }
-//
-//    public void buildImageFolder(String imagePath,String bucket_Name,int bucket_Id){
-//        ImageFolder imageFolder = new ImageFolder();
-//        imageFolder.setBucket_id(bucket_Id);
-//        imageFolder.setBucket_Name(bucket_Name);
-//        imageFolder.buildImageList(imagePath);
-//        folders.add(imageFolder);
-//    }
+
+
+    //获取相册分类合集
+    public List<File> getGridViewFolderData(File firstImagePath) {
+
+        List<File> folderImages = new ArrayList<>();
+
+        //selection: 指定查询条件
+        String selection = MediaStore.Images.Thumbnails.DATA + " like ?";
+        //设定查询目录
+        File file = firstImagePath.getParentFile();
+        String parentFile_Path = file.toString() + File.separator;
+        //定义selectionArgs：
+        String[] selectionArgs = {parentFile_Path + "%"};
+
+//        系统相册图片和其他目录下的所有图片，并按照时间倒叙排列
+        Cursor cursor = context.getContentResolver()
+                .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, selection, selectionArgs, null);
+        while (cursor.moveToNext()) {
+            String imagePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Thumbnails.DATA));
+            File image = new File(imagePath);
+            folderImages.add(image);
+        }
+        cursor.close();
+        return folderImages;
+    }
 
 }

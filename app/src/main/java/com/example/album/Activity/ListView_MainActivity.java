@@ -1,20 +1,19 @@
 package com.example.album.Activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.album.Adapter.ListViewAdapter;
 import com.example.album.R;
 import com.example.album.Util.ImageUtil;
-import com.example.album.bean.ImageFolder;
 import com.example.album.bean.ListViewItem;
 
-import java.util.List;
+public class ListView_MainActivity extends Activity implements AdapterView.OnItemClickListener{
 
-public class ListView_MainActivity extends Activity {
-
-    List<ImageFolder> folders;
     ListView listView;
     ListViewAdapter listViewAdapter;
     ListViewItem[] items;
@@ -26,13 +25,23 @@ public class ListView_MainActivity extends Activity {
         listView = (ListView) findViewById(R.id.list_view);
         initListViewAdapter();
         if (items != null) {
-            listViewAdapter = new ListViewAdapter(ListView_MainActivity.this, R.layout.listview_item_layout, items);
+            listViewAdapter = new ListViewAdapter(this, R.layout.listview_item_layout, items);
         }
         listView.setAdapter(listViewAdapter);
+        listView.setOnItemClickListener(this);
     }
 
     public void initListViewAdapter() {
-        ImageUtil imageUtil = new ImageUtil(ListView_MainActivity.this);
+        ImageUtil imageUtil = new ImageUtil(this);
         items = imageUtil.getListViewAdapterData();
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        ListViewItem listViewItem = items[position];
+        String firstImagePath = listViewItem.getFirstImagePath();
+        Intent intent = new Intent(this,GridViewActivity.class);
+        intent.putExtra("firstImagePath",firstImagePath);
+        startActivity(intent);
     }
 }

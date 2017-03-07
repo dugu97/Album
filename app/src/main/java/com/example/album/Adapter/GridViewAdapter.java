@@ -62,19 +62,6 @@ public class GridViewAdapter extends BaseAdapter {
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .centerCrop()
                 .into(viewHolder.imageView);
-//       viewHolder.imageView.setImageURI(Uri.fromFile((File) getItem(position)));
-//        //定义一个ImageView,显示在GridView里
-//        ImageView imageView;
-//        if(convertView==null){
-//            imageView=new ImageView(context);
-//            imageView.setLayoutParams(new GridView.LayoutParams(350, 350));
-//            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-//            imageView.setPadding(8, 8, 8, 8);
-//        }else{
-//            imageView = (ImageView) convertView;
-//        }
-//        imageView.setImageResource(mThumbIds[position]);
-//        return imageView;
         return convertView;
     }
 
@@ -90,14 +77,4 @@ public class GridViewAdapter extends BaseAdapter {
         }
     }
 
-    private Integer[] mThumbIds = {
-            R.mipmap.ic_launcher,
-            R.mipmap.ic_launcher,
-            R.mipmap.ic_launcher,
-            R.mipmap.ic_launcher,
-            R.mipmap.ic_launcher,
-            R.mipmap.ic_launcher,
-            R.mipmap.ic_launcher,
-            R.mipmap.ic_launcher,
-    };
 }
