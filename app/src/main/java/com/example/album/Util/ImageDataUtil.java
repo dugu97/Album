@@ -18,11 +18,11 @@ import java.util.Set;
  * Created by 独步清风 on 2017/3/5.
  */
 
-public class ImageUtil {
+public class ImageDataUtil {
 
     private Context context;
 
-    public ImageUtil(Context context) {
+    public ImageDataUtil(Context context) {
         this.context = context;
     }
 
@@ -41,24 +41,26 @@ public class ImageUtil {
                 .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                         new String[]{MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME,
                                 MediaStore.Images.Thumbnails.DATA}, null, null, MediaStore.Images.Media.DATE_TAKEN + " DESC ");
-
-        while (cursor.moveToNext()) {
-            bucket_Name = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME));
-            firstImagePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Thumbnails.DATA));
-            parentFile_Item = new File(firstImagePath).getParentFile();
-            if (!bucketSet.contains(bucket_Name) || !absolutePath.contains(parentFile_Item)) {
-
-                firstImagePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA));
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                bucket_Name = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME));
+                firstImagePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Thumbnails.DATA));
                 parentFile_Item = new File(firstImagePath).getParentFile();
-                parentFile_ImageNum = getAbsoluteImageNum(parentFile_Item);
-                ListViewItem listViewItem = new ListViewItem(firstImagePath, bucket_Name, parentFile_ImageNum + "");
-                items.add(listViewItem);
+                if (!bucketSet.contains(bucket_Name) || !absolutePath.contains(parentFile_Item)) {
 
-                absolutePath.add(new File(firstImagePath).getParentFile());
-                bucketSet.add(bucket_Name);
+                    firstImagePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA));
+                    parentFile_Item = new File(firstImagePath).getParentFile();
+                    parentFile_ImageNum = getAbsoluteImageNum(parentFile_Item);
+                    ListViewItem listViewItem = new ListViewItem(firstImagePath, bucket_Name, parentFile_ImageNum + "");
+                    items.add(listViewItem);
+
+                    absolutePath.add(new File(firstImagePath).getParentFile());
+                    bucketSet.add(bucket_Name);
+                }
             }
+            cursor.close();
         }
-        cursor.close();
+
         ListViewItem[] listViewItems = new ListViewItem[items.size()];
         for (int i = 0; i < listViewItems.length; i++) {
             listViewItems[i] = items.get(i);
@@ -67,16 +69,14 @@ public class ImageUtil {
         return listViewItems;
     }
 
-    public int getAbsoluteImageNum(File parentFile_Item) {
+    private int getAbsoluteImageNum(File parentFile_Item) {
 
         String[] parentFile_ItemNum = parentFile_Item.list(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String filename) {
-                if (filename.endsWith(".jpg")
+                return (filename.endsWith(".jpg")
                         || filename.endsWith(".png")
-                        || filename.endsWith(".jpeg"))
-                    return true;
-                return false;
+                        || filename.endsWith(".jpeg"));
             }
         });
         return parentFile_ItemNum.length;
@@ -100,12 +100,15 @@ public class ImageUtil {
 //        系统相册图片和其他目录下的所有图片，并按照时间倒叙排列
         Cursor cursor = context.getContentResolver()
                 .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, selection, selectionArgs, null);
-        while (cursor.moveToNext()) {
-            String imagePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Thumbnails.DATA));
-            File image = new File(imagePath);
-            folderImages.add(image);
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                String imagePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Thumbnails.DATA));
+                File image = new File(imagePath);
+                folderImages.add(image);
+            }
+            cursor.close();
         }
-        cursor.close();
+
         return folderImages;
     }
 

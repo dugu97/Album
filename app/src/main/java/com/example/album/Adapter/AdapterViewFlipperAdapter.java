@@ -5,9 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -17,27 +16,30 @@ import java.io.File;
 import java.util.List;
 
 /**
- * Created by 独步清风 on 2017/2/22.
+ * Created by 独步清风 on 2017/3/8.
  */
 
-public class GridViewAdapter extends BaseAdapter {
+public class AdapterViewFlipperAdapter extends BaseAdapter {
 
     private Context context;
-    private List<File> list;
+    private List<File> imagesData;
+    private int firstDisplayImage;
+    private Boolean is = true;
 
-    public GridViewAdapter(Context context, List<File> list) {
+    public AdapterViewFlipperAdapter(Context context, List<File> imagesData, int firstDisplayImage){
         this.context = context;
-        this.list = list;
+        this.imagesData = imagesData;
+        this.firstDisplayImage = firstDisplayImage;
     }
 
     @Override
     public int getCount() {
-        return list == null ? 0 : list.size();
+        return imagesData.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return list.get(position);
+        return imagesData.get(position);
     }
 
     @Override
@@ -45,13 +47,18 @@ public class GridViewAdapter extends BaseAdapter {
         return position;
     }
 
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
         ViewHolder viewHolder;
 
         if (convertView == null){
-            convertView = LayoutInflater.from(context).inflate(R.layout.item_layout,null);
+            if (is) {
+                position = firstDisplayImage;
+                is = false;
+            }
+            convertView = LayoutInflater.from(context).inflate(R.layout.showimages_layout,null);
             viewHolder = new ViewHolder(convertView);
             convertView.setTag(viewHolder);
         } else {
@@ -60,20 +67,18 @@ public class GridViewAdapter extends BaseAdapter {
         Glide.with(context)
                 .load((File)getItem(position))
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .centerCrop()
+                .centerCrop().animate(R.anim.rotate_out)
                 .into(viewHolder.imageView);
+        String s = position + "";
+        Toast.makeText(context,s,Toast.LENGTH_SHORT).show();
         return convertView;
     }
 
-    private class ViewHolder {
+    private class ViewHolder{
         ImageView imageView;
-        CheckBox checkBox;
-
         public ViewHolder(View convertView){
-            imageView = (ImageView) convertView.findViewById(R.id.imageView);
-            checkBox = (CheckBox) convertView.findViewById(R.id.checkBox);
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(350,350);
-            imageView.setLayoutParams(params);
+            imageView = (ImageView) convertView.findViewById(R.id.showImageView);
+            imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         }
     }
 
