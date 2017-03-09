@@ -63,7 +63,6 @@ public class AdapterViewFlipperActivity extends Activity implements View.OnTouch
         adapterViewFlipper.setDisplayedChild(onClickImagePosition);
         adapterViewFlipper.setOnTouchListener(this);
         myGestureDetector = new GestureDetector(this, new MyGestureListener());
-        // adapterViewFlipper.startFlipping();
     }
 
     public void initAdapterViewFlipperAdapter() {

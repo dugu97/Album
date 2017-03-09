@@ -4,8 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.CheckBox;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -20,61 +19,44 @@ import java.util.List;
  * Created by 独步清风 on 2017/2/22.
  */
 
-public class GridViewAdapter extends BaseAdapter {
+public class GridViewAdapter extends ArrayAdapter<File> {
 
-    private Context context;
-    private List<File> list;
+    private int resourceId;
 
-    public GridViewAdapter(Context context, List<File> list) {
-        this.context = context;
-        this.list = list;
-    }
-
-    @Override
-    public int getCount() {
-        return list == null ? 0 : list.size();
-    }
-
-    @Override
-    public Object getItem(int position) {
-        return list.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
+    public GridViewAdapter(Context context, int resource, List<File> objects) {
+        super(context, resource, objects);
+        this.resourceId = resource;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
+        File imagePath = getItem(position);
+        View view;
         ViewHolder viewHolder;
-
-        if (convertView == null){
-            convertView = LayoutInflater.from(context).inflate(R.layout.item_layout,null);
-            viewHolder = new ViewHolder(convertView);
-            convertView.setTag(viewHolder);
+        if (convertView == null) {
+            view = LayoutInflater.from(getContext()).inflate(resourceId, null);
+            viewHolder = new ViewHolder();
+            viewHolder.imageView = (ImageView) view.findViewById(R.id.imageView);
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(350,350);
+            viewHolder.imageView.setLayoutParams(params);
+            view.setTag(viewHolder);
         } else {
-            viewHolder = (ViewHolder) convertView.getTag();
+            view = convertView;
+            viewHolder = (ViewHolder) view.getTag();
         }
-        Glide.with(context)
-                .load((File)getItem(position))
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
+        Glide.with(getContext())
+                .load(imagePath)
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .centerCrop()
                 .into(viewHolder.imageView);
-        return convertView;
+//        viewHolder.bucket_Name.setText(imageFolder.getBucket_Name());
+//        viewHolder.photo_Num.setText(imageFolder.getPhoto_Num()+ "张照片");
+        return view;
     }
 
-    private class ViewHolder {
+    class ViewHolder {
         ImageView imageView;
-        CheckBox checkBox;
-
-        public ViewHolder(View convertView){
-            imageView = (ImageView) convertView.findViewById(R.id.imageView);
-            checkBox = (CheckBox) convertView.findViewById(R.id.checkBox);
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(350,350);
-            imageView.setLayoutParams(params);
-        }
     }
 
 }

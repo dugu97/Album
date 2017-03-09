@@ -42,8 +42,10 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
         File file = new File(firstImagePath);
         ImageDataUtil imageDataUtil = new ImageDataUtil(this);
         folderImages = imageDataUtil.getGridViewFolderData(file);
-        myAdapter = new GridViewAdapter(this,folderImages);
+        myAdapter = new GridViewAdapter(this,R.layout.gridview_item_layout,folderImages);
     }
+
+
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
