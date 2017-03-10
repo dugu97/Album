@@ -1,8 +1,10 @@
 package com.example.album.Util;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.provider.MediaStore;
+import android.util.DisplayMetrics;
 
 import com.example.album.bean.ListViewItem;
 
@@ -83,7 +85,6 @@ public class ImageDataUtil {
 
     }
 
-
     //获取相册分类合集
     public List<File> getGridViewFolderData(File firstImagePath) {
 
@@ -110,6 +111,13 @@ public class ImageDataUtil {
         }
 
         return folderImages;
+    }
+
+    public int getDisplay(){
+        Resources resources = context.getResources();
+        DisplayMetrics dm = resources.getDisplayMetrics();
+        int result = (dm.widthPixels-18)/3;
+        return result;
     }
 
 }

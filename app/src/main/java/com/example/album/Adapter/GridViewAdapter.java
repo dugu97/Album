@@ -1,62 +1,63 @@
 package com.example.album.Adapter;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.AbsListView;
+import android.widget.BaseAdapter;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.example.album.R;
+import com.example.album.Util.ImageDataUtil;
+import com.example.album.bean.GridViewItem;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by 独步清风 on 2017/2/22.
  */
 
-public class GridViewAdapter extends ArrayAdapter<File> {
+public class GridViewAdapter extends BaseAdapter {
 
-    private int resourceId;
+    private Map<Integer, Boolean> mSelectMap = null;
+    private Context context = null;
+    private List<File> images = null;
 
-    public GridViewAdapter(Context context, int resource, List<File> objects) {
-        super(context, resource, objects);
-        this.resourceId = resource;
+    public GridViewAdapter(Context context, List<File> images,Map<Integer, Boolean> mSelectMap) {
+        this.context = context;
+        this.images = images;
+        this.mSelectMap = mSelectMap;
+    }
+
+    @Override
+    public int getCount() {
+        return images.size();
+    }
+
+    @Override
+    public Object getItem(int position) {
+        return images.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        File imagePath = getItem(position);
-        View view;
-        ViewHolder viewHolder;
+        GridViewItem item;
         if (convertView == null) {
-            view = LayoutInflater.from(getContext()).inflate(resourceId, null);
-            viewHolder = new ViewHolder();
-            viewHolder.imageView = (ImageView) view.findViewById(R.id.imageView);
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(350,350);
-            viewHolder.imageView.setLayoutParams(params);
-            view.setTag(viewHolder);
+            item = new GridViewItem(context);
+            ImageDataUtil imageDataUtil = new ImageDataUtil(context);
+            item.setLayoutParams(new AbsListView.LayoutParams(imageDataUtil.getDisplay(),imageDataUtil.getDisplay()));
         } else {
-            view = convertView;
-            viewHolder = (ViewHolder) view.getTag();
+            item = (GridViewItem) convertView;
         }
-        Glide.with(getContext())
-                .load(imagePath)
-                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                .centerCrop()
-                .into(viewHolder.imageView);
-//        viewHolder.bucket_Name.setText(imageFolder.getBucket_Name());
-//        viewHolder.photo_Num.setText(imageFolder.getPhoto_Num()+ "张照片");
-        return view;
-    }
 
-    class ViewHolder {
-        ImageView imageView;
+        item.setImageView(images.get(position));
+        item.setChecked(mSelectMap.get(position) == null ? false : mSelectMap.get(position));
+        return item;
     }
-
 }
