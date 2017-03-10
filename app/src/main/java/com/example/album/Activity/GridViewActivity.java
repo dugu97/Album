@@ -25,11 +25,12 @@ import com.example.album.Util.ImageDataUtil;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GridViewActivity extends Activity implements AdapterView.OnItemClickListener,AbsListView.MultiChoiceModeListener{
+public class GridViewActivity extends Activity implements AdapterView.OnItemClickListener, AbsListView.MultiChoiceModeListener {
 
     private FileIoUtil fileIoUtil;
     private GridViewAdapter myAdapter;
@@ -62,7 +63,7 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
         File file = new File(firstImagePath);
         ImageDataUtil imageDataUtil = new ImageDataUtil(this);
         folderImages = imageDataUtil.getGridViewFolderData(file);
-        myAdapter = new GridViewAdapter(this,folderImages,mSelectMap);
+        myAdapter = new GridViewAdapter(this, folderImages, mSelectMap);
     }
 
     @Override
@@ -70,7 +71,7 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
         Intent intent = new Intent(this, AdapterViewFlipperActivity.class);
         intent.putExtra("onClickImagePosition", position);
         intent.putExtra("folderImages", (Serializable) folderImages);
-        Toast.makeText(this,mSelectMap.toString(),Toast.LENGTH_LONG).show();
+        Toast.makeText(this, mSelectMap.toString(), Toast.LENGTH_LONG).show();
         startActivity(intent);
         overridePendingTransition(R.anim.zoom_in, R.anim.zoom_out);
     }
@@ -79,7 +80,7 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
     public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
 //         当每个项状态改变的时候的操作
         mActionText.setText(formatString(gridView.getCheckedItemCount()));
-        mSelectMap.put(position,checked);
+        mSelectMap.put(position, checked);
         mode.invalidate();
     }
 
@@ -88,13 +89,13 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
 //         先清除上次得到的mSelectMap
         mSelectMap.clear();
 //         得到布局文件的View
-        View menuView = LayoutInflater.from(this).inflate(R.layout.actionbar_layout,null);
+        View menuView = LayoutInflater.from(this).inflate(R.layout.actionbar_layout, null);
         mActionText = (TextView) menuView.findViewById(R.id.action_text);
         mActionText.setText(formatString(gridView.getCheckedItemCount()));
 //         设置动作条的视图
         mode.setCustomView(menuView);
 //         得到菜单
-        getMenuInflater().inflate(R.menu.action_menu,menu);
+        getMenuInflater().inflate(R.menu.action_menu, menu);
         return true;
     }
 
@@ -108,20 +109,20 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
 //        当点击全选的时候,全选 点击全不选的时候全不选
 
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
 
-            case R.id.menu_selected :
-                for (int i = 0; i < gridView.getCount(); i++){
-                    gridView.setItemChecked(i,true);
-                    mSelectMap.put(i,true);
+            case R.id.menu_selected:
+                for (int i = 0; i < gridView.getCount(); i++) {
+                    gridView.setItemChecked(i, true);
+                    mSelectMap.put(i, true);
                 }
                 break;
 
-            case R.id.menu_unselected :
-                for (int i = 0; i < gridView.getCount(); i++){
-                    gridView.setItemChecked(i,false);
+            case R.id.menu_unselected:
+                for (int i = 0; i <= gridView.getCount(); i++) {
+                    gridView.setItemChecked(i, false);
+                    mSelectMap.remove(i);
                 }
-                mSelectMap.clear();
                 break;
         }
         return true;
@@ -130,17 +131,21 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
     //多选确定后回调此函数
     @Override
     public void onDestroyActionMode(ActionMode mode) {
+        Collection<Boolean> values = mSelectMap.values();
+        if (!values.contains(true)) {
+            return;
+        }
         myAdapter.notifyDataSetChanged();
         getSelectedImagesFileSet();
-        fileIoUtil = new FileIoUtil(this,selectedImagesFileSet);
+        fileIoUtil = new FileIoUtil(this, selectedImagesFileSet);
         fileIoUtil.chooseOperaterFromDialog();
-        Toast.makeText(this,"这里",Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "这里", Toast.LENGTH_LONG).show();
     }
 
-    public void getSelectedImagesFileSet(){
+    public void getSelectedImagesFileSet() {
         selectedImagesFileSet = new ArrayList<>();
-        for(int i = 0; i < folderImages.size(); i ++){
-            if (mSelectMap.containsKey(i) && mSelectMap.get(i)){
+        for (int i = 0; i < folderImages.size(); i++) {
+            if (mSelectMap.containsKey(i) && mSelectMap.get(i)) {
                 selectedImagesFileSet.add(folderImages.get(i));
             }
         }
