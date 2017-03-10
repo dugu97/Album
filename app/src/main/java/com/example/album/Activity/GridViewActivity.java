@@ -72,7 +72,7 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
         intent.putExtra("folderImages", (Serializable) folderImages);
         Toast.makeText(this,mSelectMap.toString(),Toast.LENGTH_LONG).show();
         startActivity(intent);
-        overridePendingTransition(R.anim.zoom_out, R.anim.showimage_zoom_in);
+        overridePendingTransition(R.anim.zoom_in, R.anim.zoom_out);
     }
 
     @Override

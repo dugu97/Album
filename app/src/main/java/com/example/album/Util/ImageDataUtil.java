@@ -78,7 +78,9 @@ public class ImageDataUtil {
             public boolean accept(File dir, String filename) {
                 return (filename.endsWith(".jpg")
                         || filename.endsWith(".png")
-                        || filename.endsWith(".jpeg"));
+                        || filename.endsWith(".jpeg")
+                        || filename.endsWith(".gif")
+                        || filename.endsWith(".bmp"));
             }
         });
         return parentFile_ItemNum.length;
@@ -113,10 +115,10 @@ public class ImageDataUtil {
         return folderImages;
     }
 
-    public int getDisplay(){
+    public int getDisplay() {
         Resources resources = context.getResources();
         DisplayMetrics dm = resources.getDisplayMetrics();
-        int result = (dm.widthPixels-18)/3;
+        int result = (dm.widthPixels - 18) / 3;
         return result;
     }
 
