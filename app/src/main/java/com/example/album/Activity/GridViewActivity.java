@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.AbsListView;
@@ -18,18 +19,22 @@ import android.widget.Toast;
 
 import com.example.album.Adapter.GridViewAdapter;
 import com.example.album.R;
+import com.example.album.Util.FileIoUtil;
 import com.example.album.Util.ImageDataUtil;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class GridViewActivity extends Activity implements AdapterView.OnItemClickListener,AbsListView.MultiChoiceModeListener{
 
+    private FileIoUtil fileIoUtil;
     private GridViewAdapter myAdapter;
     private List<File> folderImages;
+    private List<File> selectedImagesFileSet;
     private GridView gridView;
     private TextView mActionText;
     private Map<Integer, Boolean> mSelectMap = new HashMap<Integer, Boolean>();
@@ -37,6 +42,7 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.gridview);
         initGridViewAdapter();
         gridView = (GridView) findViewById(R.id.gridView);
@@ -121,9 +127,23 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
         return true;
     }
 
+    //多选确定后回调此函数
     @Override
     public void onDestroyActionMode(ActionMode mode) {
-            myAdapter.notifyDataSetChanged();
+        myAdapter.notifyDataSetChanged();
+        getSelectedImagesFileSet();
+        fileIoUtil = new FileIoUtil(this,selectedImagesFileSet);
+        fileIoUtil.chooseOperaterFromDialog();
+        Toast.makeText(this,"这里",Toast.LENGTH_LONG).show();
+    }
+
+    public void getSelectedImagesFileSet(){
+        selectedImagesFileSet = new ArrayList<>();
+        for(int i = 0; i < folderImages.size(); i ++){
+            if (mSelectMap.containsKey(i) && mSelectMap.get(i)){
+                selectedImagesFileSet.add(folderImages.get(i));
+            }
+        }
     }
 
     private String formatString(int count) {

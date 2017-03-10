@@ -5,8 +5,8 @@
 
     <scale
         android:duration="@android:integer/config_mediumAnimTime"
-        android:fromXScale="0.1"
-        android:fromYScale="0.1"
+        android:fromXScale="0.5"
+        android:fromYScale="0.5"
         android:pivotX="50%"
         android:pivotY="50%"
         android:toXScale="1.0"
@@ -15,7 +15,7 @@
 
     <alpha
 
-        android:fromAlpha="0"
+        android:fromAlpha="1.0"
         android:toAlpha="1.0"
         />
 

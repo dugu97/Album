@@ -9,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.album.R;
 
 import java.io.File;
@@ -66,7 +65,6 @@ public class AdapterViewFlipperAdapter extends BaseAdapter {
         }
         Glide.with(context)
                 .load((File)getItem(position))
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .centerCrop().animate(R.anim.rotate_out)
                 .into(viewHolder.imageView);
         String s = position + "";

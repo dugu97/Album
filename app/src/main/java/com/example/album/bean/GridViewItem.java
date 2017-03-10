@@ -9,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.album.R;
 import com.example.album.Util.ImageDataUtil;
 
@@ -72,8 +71,7 @@ public class GridViewItem extends RelativeLayout implements Checkable{
         if (mImageView != null) {
             Glide.with(getContext())
                     .load(imagePath)
-                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                    .centerCrop()
+                    .centerCrop().animate(R.anim.showimage_zoom_in)
                     .into(mImageView);
         }
     }

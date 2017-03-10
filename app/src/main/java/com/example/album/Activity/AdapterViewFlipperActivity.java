@@ -7,6 +7,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterViewFlipper;
 
 import com.example.album.Adapter.AdapterViewFlipperAdapter;
@@ -56,6 +57,7 @@ public class AdapterViewFlipperActivity extends Activity implements View.OnTouch
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_imageshow);
         adapterViewFlipper = (AdapterViewFlipper) findViewById(R.id.AdapterViewFlipper);
         initAdapterViewFlipperAdapter();
