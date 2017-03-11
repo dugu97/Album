@@ -21,8 +21,8 @@ public class AdapterViewFlipperActivity extends Activity implements View.OnTouch
     private List<File> folderImages;
     private int onClickImagePosition;
     private AdapterViewFlipperAdapter myAdapter;
-    AdapterViewFlipper adapterViewFlipper;
-    GestureDetector myGestureDetector;
+    private AdapterViewFlipper adapterViewFlipper;
+    private GestureDetector myGestureDetector;
 
     class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
 
@@ -80,11 +80,6 @@ public class AdapterViewFlipperActivity extends Activity implements View.OnTouch
 
     private void showNextImage() {
         adapterViewFlipper.showNext();
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
     }
 
     @Override

@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -17,7 +19,7 @@ import java.util.List;
  * Created by 独步清风 on 2017/3/10.
  */
 
-public class FileIoUtil {
+public class FileIoUtil{
 
     private Context context;
     private List<File> selectedImagesFileSet;
@@ -27,53 +29,71 @@ public class FileIoUtil {
         this.selectedImagesFileSet = selectedImagesFileSet;
     }
 
-    private Boolean deleteFiles() {
+    //删除后要发送广播通知系统
+    public Boolean deleteFiles() {
+
+        String folderImages;
+        ImageDataUtil imageDataUtil = new ImageDataUtil(context);
+
+        for (int i = 0; i < selectedImagesFileSet.size(); i++) {
+
+            File selectImage = selectedImagesFileSet.get(i);
+
+            if (selectImage.exists()) {
+                selectImage.delete();
+                Intent media = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(selectImage));
+                context.sendBroadcast(media);
+            }
+
+            folderImages = imageDataUtil.isExistInDatabase(selectImage);
+
+            if (folderImages != null && folderImages.equals(selectImage.toString())) {
+                i = i - 1;
+            }
+        }
         return true;
     }
 
-    private Boolean copyFiles() {
+    public Boolean copyToThisFiles(){
+//        FileInputStream fosfrom = new FileInputStream(fromFile);
+//        FileOutputStream fosto = new FileOutputStream(toFile);
+//
+//        byte[] bt = new byte[1024];
+//        int c;
+//        while((c=fosfrom.read(bt)) > 0){
+//            fosto.write(bt,0,c);
+//        }
+//        //关闭输入、输出流
+//        fosfrom.close();
+//        try {
+//            fosto.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
         return true;
     }
 
-    private Boolean moveFiles() {
+    public Boolean moveFiles() {
         return true;
     }
 
-    private Boolean pasteFiles(){
+    public Boolean copyToOtherFiles() {
         return true;
     }
 
-    private Boolean renameFiles() {
+    public Boolean renameFiles() {
         getRenameDataFromDialog();
         return true;
     }
 
-    public void chooseOperaterFromDialog() {
+//    public void refreshView(){
+//        Intent intent = new Intent(context,GridViewActivity.class);
+//        context.startActivity(intent);
+//    }
 
-        final String[] operateSets = new String[]{"重命名", "复制", "粘贴", "删除"};
-        Dialog dialog = new AlertDialog.Builder(context)
-                .setItems(operateSets, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (operateSets[which].equals("重命名")) {
-                            renameFiles();
-                        }
-                        if (operateSets[which].equals("复制")){
-                            copyFiles();
-                        }
-                        if (operateSets[which].equals("粘贴")){
-                            pasteFiles();
-                        }
-                        if (operateSets[which].equals("删除")) {
-                            deleteFiles();
-                        }
-                    }
-                }).create();
-        dialog.show();
-    }
 
-    private void getRenameDataFromDialog(){
-        final View renameDataView = LayoutInflater.from(context).inflate(R.layout.table_dialog_data,null);
+    private void getRenameDataFromDialog() {
+        final View renameDataView = LayoutInflater.from(context).inflate(R.layout.table_dialog_data, null);
         Dialog dialog = new AlertDialog.Builder(context)
                 .setView(renameDataView)
                 .setTitle("输入重命名所需数据")
@@ -83,7 +103,6 @@ public class FileIoUtil {
                         EditText newName = (EditText) renameDataView.findViewById(R.id.NewNameData);
                         EditText startNumber = (EditText) renameDataView.findViewById(R.id.startNumber);
                         EditText numDigits = (EditText) renameDataView.findViewById(R.id.numberDigits);
-
 
 
                     }

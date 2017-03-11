@@ -39,6 +39,12 @@ public class ListView_MainActivity extends Activity implements AdapterView.OnIte
         listView.setOnItemClickListener(this);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        listViewAdapter.notifyDataSetChanged();
+    }
+
     public void initListViewAdapter() {
         ImageDataUtil imageDataUtil = new ImageDataUtil(this);
         items = imageDataUtil.getListViewAdapterData();
@@ -52,5 +58,6 @@ public class ListView_MainActivity extends Activity implements AdapterView.OnIte
         intent.putExtra("firstImagePath",firstImagePath);
         startActivity(intent);
         overridePendingTransition(R.anim.zoom_out, R.anim.zoom_in);
+        finish();
     }
 }

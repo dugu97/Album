@@ -1,8 +1,14 @@
 package com.example.album.Activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,7 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GridViewActivity extends Activity implements AdapterView.OnItemClickListener, AbsListView.MultiChoiceModeListener {
+public class GridViewActivity extends Activity implements AdapterView.OnItemClickListener, AbsListView.MultiChoiceModeListener, DialogInterface.OnClickListener {
 
     private FileIoUtil fileIoUtil;
     private GridViewAdapter myAdapter;
@@ -38,7 +44,13 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
     private List<File> selectedImagesFileSet;
     private GridView gridView;
     private TextView mActionText;
+    private File firstImagePath;
+    private String firstImagePathString;
+    private ImageDataUtil imageDataUtil = new ImageDataUtil(this);
     private Map<Integer, Boolean> mSelectMap = new HashMap<Integer, Boolean>();
+    private final static int DELETE_RESULT_OK = 1;
+    private final static int COPY_TO_THIS_FILE = 2;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,10 +71,10 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
 
     public void initGridViewAdapter() {
         Intent intent = getIntent();
-        String firstImagePath = intent.getStringExtra("firstImagePath");
-        File file = new File(firstImagePath);
-        ImageDataUtil imageDataUtil = new ImageDataUtil(this);
-        folderImages = imageDataUtil.getGridViewFolderData(file);
+        firstImagePathString = intent.getStringExtra("firstImagePath");
+        firstImagePath = new File(firstImagePathString);
+        imageDataUtil = new ImageDataUtil(this);
+        folderImages = imageDataUtil.getGridViewFolderData(firstImagePath);
         myAdapter = new GridViewAdapter(this, folderImages, mSelectMap);
     }
 
@@ -71,6 +83,7 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
         Intent intent = new Intent(this, AdapterViewFlipperActivity.class);
         intent.putExtra("onClickImagePosition", position);
         intent.putExtra("folderImages", (Serializable) folderImages);
+        intent.putExtra("firstImagePath", firstImagePathString);
         Toast.makeText(this, mSelectMap.toString(), Toast.LENGTH_LONG).show();
         startActivity(intent);
         overridePendingTransition(R.anim.zoom_in, R.anim.zoom_out);
@@ -135,11 +148,85 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
         if (!values.contains(true)) {
             return;
         }
-        myAdapter.notifyDataSetChanged();
         getSelectedImagesFileSet();
         fileIoUtil = new FileIoUtil(this, selectedImagesFileSet);
-        fileIoUtil.chooseOperaterFromDialog();
-        Toast.makeText(this, "这里", Toast.LENGTH_LONG).show();
+        chooseOperateFromDialog();
+    }
+
+    public void chooseOperateFromDialog() {
+
+        final String[] operateSets = new String[]{"重命名", "复制到当前相册", "复制到其它相册", "删除"};
+        Dialog dialog = new AlertDialog.Builder(this)
+                .setItems(operateSets, this).create();
+        dialog.show();
+    }
+
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+
+        final String[] operateSets = new String[]{"重命名", "复制到当前相册", "复制到其它相册", "删除"};
+        if (operateSets[which].equals("重命名")) {
+            fileIoUtil.renameFiles();
+        }
+        if (operateSets[which].equals("复制到当前相册")) {
+            FileOperateInUI(COPY_TO_THIS_FILE);
+        }
+        if (operateSets[which].equals("复制到其它相册")) {
+            fileIoUtil.copyToOtherFiles();
+        }
+        if (operateSets[which].equals("删除")) {
+            FileOperateInUI(DELETE_RESULT_OK);
+        }
+
+    }
+
+    private void FileOperateInUI(int flag) {
+
+        final ProgressDialog progressDialog = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
+        progressDialog.setCancelable(false);
+        progressDialog.setTitle("正在执行操作 ");
+        progressDialog.show();
+
+        final Handler handler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                if (msg.what == DELETE_RESULT_OK) {
+                    progressDialog.dismiss();
+                    reFleshActivity();
+                }else if (msg.what == COPY_TO_THIS_FILE){
+                    progressDialog.dismiss();
+                    reFleshActivity();
+                }
+            }
+        };
+
+        if (flag == DELETE_RESULT_OK) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    if (fileIoUtil.deleteFiles()) {
+                        handler.sendEmptyMessage(DELETE_RESULT_OK);
+                    }
+                }
+            }).start();
+        }else if (flag == COPY_TO_THIS_FILE){
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    if (fileIoUtil.copyToThisFiles()){
+                        handler.sendEmptyMessage(COPY_TO_THIS_FILE);
+                    }
+                }
+            }).start();
+        }
+    }
+
+    private void reFleshActivity(){
+        Intent intent = new Intent(GridViewActivity.this, GridViewActivity.class);
+        intent.putExtra("firstImagePath", firstImagePathString);
+        startActivity(intent);
+        finish();
     }
 
     public void getSelectedImagesFileSet() {
@@ -151,7 +238,15 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(this, ListView_MainActivity.class);
+        startActivity(intent);
+    }
+
     private String formatString(int count) {
         return String.format("选中%s个", count);
     }
+
 }

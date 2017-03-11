@@ -115,6 +115,26 @@ public class ImageDataUtil {
         return folderImages;
     }
 
+    public String isExistInDatabase(File firstImagePath) {
+
+        String imagePath = null;
+        //selection: 指定查询条件
+        String selection = MediaStore.Images.Thumbnails.DATA + " like ?";
+        //设定查询目录
+        String file_Path = firstImagePath.toString();
+        //定义selectionArgs：
+        String[] selectionArgs = {file_Path};
+        Cursor cursor = context.getContentResolver()
+                .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, selection, selectionArgs, null);
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                imagePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Thumbnails.DATA));
+            }
+            cursor.close();
+        }
+        return imagePath;
+    }
+
     public int getDisplay() {
         Resources resources = context.getResources();
         DisplayMetrics dm = resources.getDisplayMetrics();

@@ -28,6 +28,13 @@ public class GridViewItem extends RelativeLayout implements Checkable{
     private ImageView mImageView = null;
     private ImageView mSeclectView = null;
     private LayoutParams params;
+    private File imagePath;  //当前图片的绝对路径
+
+
+    public File getImagePath() {
+        return imagePath;
+    }
+
 
     public GridViewItem(Context context) {
         this(context, null, 0);
@@ -69,6 +76,8 @@ public class GridViewItem extends RelativeLayout implements Checkable{
     }
 
     public void setImageView(File imagePath) {
+
+        this.imagePath = imagePath;
         if (mImageView != null) {
             if (imagePath.toString().endsWith(".gif")){
                 Glide.with(getContext())
