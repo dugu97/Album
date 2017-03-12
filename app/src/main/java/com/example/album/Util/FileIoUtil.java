@@ -153,6 +153,12 @@ public class FileIoUtil implements DialogInterface.OnClickListener{
         return true;
     }
 
+//    public void refreshView(){
+//        Intent intent = new Intent(context,GridViewActivity.class);
+//        context.startActivity(intent);
+//    }
+
+
     private void getRenameDataFromDialog() {
 
         View renameDataView = LayoutInflater.from(context).inflate(R.layout.table_dialog_data, null);
