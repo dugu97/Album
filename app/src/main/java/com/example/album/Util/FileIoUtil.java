@@ -6,6 +6,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -100,8 +101,6 @@ public class FileIoUtil implements DialogInterface.OnClickListener{
             fosFromFile.close();
             fosToFile.close();
 
-//插入图库
-            MediaStore.Images.Media.insertImage(context.getContentResolver(),toFile.getAbsolutePath(), allNameWithFormat, null);
 
             ContentResolver resolver = context.getContentResolver();
 
@@ -114,22 +113,25 @@ public class FileIoUtil implements DialogInterface.OnClickListener{
             values.put(MediaStore.Images.Media.DATA, toFile.toString());
             resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
 
-            // 最后通知图库更新
-            try {
-                myMediaConnection = new MediaScannerConnection(context, new MediaScannerConnection.MediaScannerConnectionClient() {
-                    @Override
-                    public void onMediaScannerConnected() {
-                        myMediaConnection.scanFile(toFile.toString(),toFile.toString().substring(toFile.toString().lastIndexOf(File.separator) + 1));
-                    }
-                    @Override
-                    public void onScanCompleted(String path, Uri uri) {
-                        myMediaConnection.disconnect();
-                    }
-                });
-                myMediaConnection.connect();
-            }catch (Exception e){
-                return;
-            }
+            Uri uri = Uri.fromFile(toFile);
+            context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
+//
+//            // 最后通知图库更新
+//            try {
+//                myMediaConnection = new MediaScannerConnection(context, new MediaScannerConnection.MediaScannerConnectionClient() {
+//                    @Override
+//                    public void onMediaScannerConnected() {
+//                        myMediaConnection.scanFile(toFile.toString(),toFile.toString().substring(toFile.toString().lastIndexOf(File.separator) + 1));
+//                    }
+//                    @Override
+//                    public void onScanCompleted(String path, Uri uri) {
+//                        myMediaConnection.disconnect();
+//                    }
+//                });
+//                myMediaConnection.connect();
+//            }catch (Exception e){
+//                return;
+//            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
