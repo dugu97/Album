@@ -60,7 +60,7 @@ public class FileIoUtil implements DialogInterface.OnClickListener{
         File file1 = selectedImagesFileSet.get(0);
         File file = file1.getParentFile();
         String parentFile_Path = file.toString() + File.separator;
-        File file2 = new File(parentFile_Path + "456.jpg");
+        File file2 = new File(parentFile_Path + "456.jpg"); //特别注意此处的文件名
         for (int i = 0; i < selectedImagesFileSet.size(); i++) {
             copySingleImage(selectedImagesFileSet.get(0),file2,true);
         }
@@ -99,6 +99,9 @@ public class FileIoUtil implements DialogInterface.OnClickListener{
             //关闭输入、输出流
             fosFromFile.close();
             fosToFile.close();
+
+//插入图库
+            MediaStore.Images.Media.insertImage(context.getContentResolver(),toFile.getAbsolutePath(), allNameWithFormat, null);
 
             ContentResolver resolver = context.getContentResolver();
 
