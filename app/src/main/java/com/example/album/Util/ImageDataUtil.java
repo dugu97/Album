@@ -103,7 +103,7 @@ public class ImageDataUtil {
 
 //        系统相册图片和其他目录下的所有图片，并按照时间倒叙排列
         Cursor cursor = context.getContentResolver()
-                .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, selection, selectionArgs, null);
+                .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, selection, selectionArgs, MediaStore.Images.Media.DATE_TAKEN + " DESC ");
         if (cursor != null) {
             while (cursor.moveToNext()) {
                 String imagePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Thumbnails.DATA));
