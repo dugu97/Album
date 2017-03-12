@@ -60,7 +60,7 @@ public class FileIoUtil implements DialogInterface.OnClickListener{
         File file1 = selectedImagesFileSet.get(0);
         File file = file1.getParentFile();
         String parentFile_Path = file.toString() + File.separator;
-        File file2 = new File(parentFile_Path + "456.png");
+        File file2 = new File(parentFile_Path + "456.jpg");
         for (int i = 0; i < selectedImagesFileSet.size(); i++) {
             copySingleImage(selectedImagesFileSet.get(0),file2,true);
         }
@@ -83,7 +83,9 @@ public class FileIoUtil implements DialogInterface.OnClickListener{
         if(toFile.exists() && rewrite){
             toFile.delete();
         }
-
+//图片格式
+        int index = toFile.toString().lastIndexOf(File.separator);
+        String allNameWithformat = toFile.toString().substring(index + 1);
 
         try {
             FileInputStream fosfrom = new FileInputStream(fromFile);
@@ -102,10 +104,10 @@ public class FileIoUtil implements DialogInterface.OnClickListener{
 
             long dateTaken = System.currentTimeMillis();
             ContentValues values = new ContentValues(7);
-            values.put(MediaStore.Images.Media.TITLE, toFile.getName());
-            values.put(MediaStore.Images.Media.DISPLAY_NAME, toFile.getName());
+            values.put(MediaStore.Images.Media.TITLE, allNameWithformat);
+            values.put(MediaStore.Images.Media.DISPLAY_NAME, allNameWithformat);
             values.put(MediaStore.Images.Media.DATE_TAKEN, dateTaken);
-            values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg/gif/jpg/bmp");
+            values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg/gif/jpg/bmp/png");
             values.put(MediaStore.Images.Media.DATA, toFile.toString());
             resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
 
@@ -114,7 +116,7 @@ public class FileIoUtil implements DialogInterface.OnClickListener{
                 mMediaonnection = new MediaScannerConnection(context, new MediaScannerConnection.MediaScannerConnectionClient() {
                     @Override
                     public void onMediaScannerConnected() {
-                        mMediaonnection.scanFile(toFile.toString(),toFile.getName());
+                        mMediaonnection.scanFile(toFile.toString(),toFile.toString().substring(toFile.toString().lastIndexOf(File.separator) + 1));
                     }
                     @Override
                     public void onScanCompleted(String path, Uri uri) {
