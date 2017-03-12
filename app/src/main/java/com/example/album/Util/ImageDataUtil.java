@@ -97,6 +97,7 @@ public class ImageDataUtil {
         //设定查询目录
         File file = firstImagePath.getParentFile();
         String parentFile_Path = file.toString() + File.separator;
+        int count = getStringPathSeparatorNum(parentFile_Path);
         //定义selectionArgs：
         String[] selectionArgs = {parentFile_Path + "%"};
 
@@ -106,13 +107,21 @@ public class ImageDataUtil {
         if (cursor != null) {
             while (cursor.moveToNext()) {
                 String imagePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Thumbnails.DATA));
-                File image = new File(imagePath);
-                folderImages.add(image);
+                if (getStringPathSeparatorNum(imagePath) == count) {
+                    File image = new File(imagePath);
+                    folderImages.add(image);
+                }
             }
             cursor.close();
         }
 
         return folderImages;
+    }
+
+    public int getStringPathSeparatorNum(String parentFile_Path) {
+        String separator = "" + File.separator;
+        int count = parentFile_Path.length() - parentFile_Path.replaceAll(separator, "").length();
+        return count;
     }
 
     public String isExistInDatabase(File firstImagePath) {
