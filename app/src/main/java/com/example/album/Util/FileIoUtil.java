@@ -85,27 +85,27 @@ public class FileIoUtil implements DialogInterface.OnClickListener{
         }
 //图片格式
         int index = toFile.toString().lastIndexOf(File.separator);
-        String allNameWithformat = toFile.toString().substring(index + 1);
+        String allNameWithFormat = toFile.toString().substring(index + 1);
 
         try {
-            FileInputStream fosfrom = new FileInputStream(fromFile);
-            FileOutputStream fosto = new FileOutputStream(toFile);
+            FileInputStream fosFromFile = new FileInputStream(fromFile);
+            FileOutputStream fosToFile = new FileOutputStream(toFile);
 
             byte[] bt = new byte[1024];
             int c;
-            while ((c = fosfrom.read(bt)) > 0) {
-                fosto.write(bt, 0, c);
+            while ((c = fosFromFile.read(bt)) > 0) {
+                fosToFile.write(bt, 0, c);
             }
             //关闭输入、输出流
-            fosfrom.close();
-            fosto.close();
+            fosFromFile.close();
+            fosToFile.close();
 
             ContentResolver resolver = context.getContentResolver();
 
             long dateTaken = System.currentTimeMillis();
             ContentValues values = new ContentValues(7);
-            values.put(MediaStore.Images.Media.TITLE, allNameWithformat);
-            values.put(MediaStore.Images.Media.DISPLAY_NAME, allNameWithformat);
+            values.put(MediaStore.Images.Media.TITLE, allNameWithFormat);
+            values.put(MediaStore.Images.Media.DISPLAY_NAME, allNameWithFormat);
             values.put(MediaStore.Images.Media.DATE_TAKEN, dateTaken);
             values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg/gif/jpg/bmp/png");
             values.put(MediaStore.Images.Media.DATA, toFile.toString());
