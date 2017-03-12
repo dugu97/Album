@@ -60,13 +60,13 @@ public class FileIoUtil implements DialogInterface.OnClickListener{
 
     public Boolean copyToThisFiles() {
 
-        SimpleDateFormat format = new SimpleDateFormat("副本(yyyy-MM-dd-HH-mm-ss)");
+        SimpleDateFormat format = new SimpleDateFormat("副本(yyyy-MM-dd-HH-mm-ss-SSS)");
         String time;
         File fromFile;
         String fileFormat;
         File toFile;
         String parentFile_Path;
-        String regular = ".*_[\\u4e00-\\u9fa5][\\u4e00-\\u9fa5]\\([\\d]{4}-[\\d]{2}-[\\d]{2}-[\\d]{2}-[\\d]{2}-[\\d]{2}\\)\\..*";
+        String regular = ".*_[\\u4e00-\\u9fa5][\\u4e00-\\u9fa5]\\([\\d]{4}-[\\d]{2}-[\\d]{2}-[\\d]{2}-[\\d]{2}-[\\d]{2}-[\\d]{3}\\)\\..*";
         int i;
 
         for (i = 0; i < selectedImagesFileSet.size(); i++) {
