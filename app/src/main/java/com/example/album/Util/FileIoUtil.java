@@ -21,6 +21,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -58,12 +60,32 @@ public class FileIoUtil implements DialogInterface.OnClickListener{
 
     public Boolean copyToThisFiles() {
 
-        File file1 = selectedImagesFileSet.get(0);
-        File file = file1.getParentFile();
-        String parentFile_Path = file.toString() + File.separator;
-        File file2 = new File(parentFile_Path + "456.jpg"); //特别注意此处的文件名
+        SimpleDateFormat format = new SimpleDateFormat("副本(yyyy-MM-dd-HH-mm-ss)");
+        String time;
+        File fromFile;
+        String fileFormat;
+        File toFile;
+        String parentFile_Path;
+        String regular = ".*_[\\u4e00-\\u9fa5][\\u4e00-\\u9fa5]\\([\\d]{4}-[\\d]{2}-[\\d]{2}-[\\d]{2}-[\\d]{2}-[\\d]{2}\\)\\..*";
+
         for (int i = 0; i < selectedImagesFileSet.size(); i++) {
-            copySingleImage(selectedImagesFileSet.get(0),file2,true);
+            time = format.format(Calendar.getInstance().getTime());
+            fromFile = selectedImagesFileSet.get(i);
+            parentFile_Path = fromFile.getParentFile().toString() + File.separator;
+            fileFormat = fromFile.toString().substring(fromFile.toString().lastIndexOf("."));
+
+            if ( !(fromFile.getName().matches(regular)) ) {
+                toFile = new File(parentFile_Path, fromFile.getName() + "_" + time + fileFormat);
+                copySingleImage(fromFile,toFile,false);
+                continue;
+            }
+            if ( fromFile.getName().matches(regular)) {
+                String oldName = fromFile.getName().substring(0,fromFile.getName().length() - 24 - fileFormat.length());
+                toFile = new File(parentFile_Path, oldName + "_" + time + fileFormat);
+                copySingleImage(fromFile,toFile,false);
+                continue;
+            }
+            return false;
         }
         return true;
     }
