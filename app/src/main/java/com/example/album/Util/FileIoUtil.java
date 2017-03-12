@@ -33,7 +33,7 @@ public class FileIoUtil implements DialogInterface.OnClickListener{
     private String newNameFromEditText;
     private String startNumberFromEditText;
     private String numDigitsFromEditText;
-    private MediaScannerConnection mMediaonnection;
+    private MediaScannerConnection myMediaConnection;
 
     public FileIoUtil(Context context, List<File> selectedImagesFileSet) {
         this.context = context;
@@ -113,17 +113,17 @@ public class FileIoUtil implements DialogInterface.OnClickListener{
 
             // 最后通知图库更新
             try {
-                mMediaonnection = new MediaScannerConnection(context, new MediaScannerConnection.MediaScannerConnectionClient() {
+                myMediaConnection = new MediaScannerConnection(context, new MediaScannerConnection.MediaScannerConnectionClient() {
                     @Override
                     public void onMediaScannerConnected() {
-                        mMediaonnection.scanFile(toFile.toString(),toFile.toString().substring(toFile.toString().lastIndexOf(File.separator) + 1));
+                        myMediaConnection.scanFile(toFile.toString(),toFile.toString().substring(toFile.toString().lastIndexOf(File.separator) + 1));
                     }
                     @Override
                     public void onScanCompleted(String path, Uri uri) {
-                        mMediaonnection.disconnect();
+                        myMediaConnection.disconnect();
                     }
                 });
-                mMediaonnection.connect();
+                myMediaConnection.connect();
             }catch (Exception e){
                 return;
             }
@@ -152,12 +152,6 @@ public class FileIoUtil implements DialogInterface.OnClickListener{
 
         return true;
     }
-
-//    public void refreshView(){
-//        Intent intent = new Intent(context,GridViewActivity.class);
-//        context.startActivity(intent);
-//    }
-
 
     private void getRenameDataFromDialog() {
 
