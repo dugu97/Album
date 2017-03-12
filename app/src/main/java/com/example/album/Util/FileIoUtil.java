@@ -67,8 +67,9 @@ public class FileIoUtil implements DialogInterface.OnClickListener{
         File toFile;
         String parentFile_Path;
         String regular = ".*_[\\u4e00-\\u9fa5][\\u4e00-\\u9fa5]\\([\\d]{4}-[\\d]{2}-[\\d]{2}-[\\d]{2}-[\\d]{2}-[\\d]{2}\\)\\..*";
+        int i;
 
-        for (int i = 0; i < selectedImagesFileSet.size(); i++) {
+        for (i = 0; i < selectedImagesFileSet.size(); i++) {
             time = format.format(Calendar.getInstance().getTime());
             fromFile = selectedImagesFileSet.get(i);
             parentFile_Path = fromFile.getParentFile().toString() + File.separator;
@@ -83,11 +84,12 @@ public class FileIoUtil implements DialogInterface.OnClickListener{
                 String oldName = fromFile.getName().substring(0,fromFile.getName().length() - 24 - fileFormat.length());
                 toFile = new File(parentFile_Path, oldName + "_" + time + fileFormat);
                 copySingleImage(fromFile,toFile,false);
-                continue;
             }
-            return false;
         }
-        return true;
+        if (i == selectedImagesFileSet.size())
+            return true;
+        else
+            return false;
     }
 
     public void copySingleImage(File fromFile, final File toFile, Boolean rewrite){
