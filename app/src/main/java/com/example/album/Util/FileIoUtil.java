@@ -13,6 +13,7 @@ import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.album.R;
 
@@ -29,18 +30,32 @@ import java.util.List;
  * Created by 独步清风 on 2017/3/10.
  */
 
-public class FileIoUtil implements DialogInterface.OnClickListener{
+public class FileIoUtil implements DialogInterface.OnClickListener {
 
     private Context context;
     private List<File> selectedImagesFileSet;
     private String newNameFromEditText;
-    private String startNumberFromEditText;
-    private String numDigitsFromEditText;
+    private int startNumberFromEditText = -1;
+    private int numDigitsFromEditText = -1;
     private MediaScannerConnection myMediaConnection;
+    private String regular = ".*_[\\u4e00-\\u9fa5][\\u4e00-\\u9fa5]\\([\\d]{4}-[\\d]{2}-[\\d]{2}-[\\d]{2}-[\\d]{2}-[\\d]{2}-[\\d]{3}\\)\\..*";
+    private Boolean MULTI_SELECT = null;
+
+    private EditText newName;
+    private EditText startNumber;
+    private EditText numDigits;
 
     public FileIoUtil(Context context, List<File> selectedImagesFileSet) {
         this.context = context;
         this.selectedImagesFileSet = selectedImagesFileSet;
+        if (selectedImagesFileSet.size() > 1){
+            this.MULTI_SELECT = true;
+        }else {
+            if (selectedImagesFileSet.size() == 1){
+                this.MULTI_SELECT = false;
+            }
+        }
+
     }
 
     //删除后要发送广播通知系统,或者直接contentProvider里删除
@@ -66,7 +81,6 @@ public class FileIoUtil implements DialogInterface.OnClickListener{
         String fileFormat;
         File toFile;
         String parentFile_Path;
-        String regular = ".*_[\\u4e00-\\u9fa5][\\u4e00-\\u9fa5]\\([\\d]{4}-[\\d]{2}-[\\d]{2}-[\\d]{2}-[\\d]{2}-[\\d]{2}-[\\d]{3}\\)\\..*";
         int i;
 
         for (i = 0; i < selectedImagesFileSet.size(); i++) {
@@ -75,15 +89,15 @@ public class FileIoUtil implements DialogInterface.OnClickListener{
             parentFile_Path = fromFile.getParentFile().toString() + File.separator;
             fileFormat = fromFile.toString().substring(fromFile.toString().lastIndexOf("."));
 
-            if ( !(fromFile.getName().matches(regular)) ) {
+            if (!(fromFile.getName().matches(regular))) {
                 toFile = new File(parentFile_Path, fromFile.getName() + "_" + time + fileFormat);
-                copySingleImage(fromFile,toFile,false);
+                copySingleImage(fromFile, toFile, false);
                 continue;
             }
-            if ( fromFile.getName().matches(regular)) {
-                String oldName = fromFile.getName().substring(0,fromFile.getName().length() - 24 - fileFormat.length());
+            if (fromFile.getName().matches(regular)) {
+                String oldName = fromFile.getName().substring(0, fromFile.getName().length() - 24 - fileFormat.length());
                 toFile = new File(parentFile_Path, oldName + "_" + time + fileFormat);
-                copySingleImage(fromFile,toFile,false);
+                copySingleImage(fromFile, toFile, false);
             }
         }
         if (i == selectedImagesFileSet.size())
@@ -92,20 +106,20 @@ public class FileIoUtil implements DialogInterface.OnClickListener{
             return false;
     }
 
-    public void copySingleImage(File fromFile, final File toFile, Boolean rewrite){
-        if(!fromFile.exists()){
+    public void copySingleImage(File fromFile, final File toFile, Boolean rewrite) {
+        if (!fromFile.exists()) {
             return;
         }
-        if(!fromFile.isFile()){
+        if (!fromFile.isFile()) {
             return;
         }
-        if(!fromFile.canRead()){
+        if (!fromFile.canRead()) {
             return;
         }
-        if(!toFile.getParentFile().exists()){
+        if (!toFile.getParentFile().exists()) {
             toFile.getParentFile().mkdirs();
         }
-        if(toFile.exists() && rewrite){
+        if (toFile.exists() && rewrite) {
             toFile.delete();
         }
 //图片格式
@@ -139,23 +153,7 @@ public class FileIoUtil implements DialogInterface.OnClickListener{
 
             Uri uri = Uri.fromFile(toFile);
             context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
-//
-//            // 最后通知图库更新
-//            try {
-//                myMediaConnection = new MediaScannerConnection(context, new MediaScannerConnection.MediaScannerConnectionClient() {
-//                    @Override
-//                    public void onMediaScannerConnected() {
-//                        myMediaConnection.scanFile(toFile.toString(),toFile.toString().substring(toFile.toString().lastIndexOf(File.separator) + 1));
-//                    }
-//                    @Override
-//                    public void onScanCompleted(String path, Uri uri) {
-//                        myMediaConnection.disconnect();
-//                    }
-//                });
-//                myMediaConnection.connect();
-//            }catch (Exception e){
-//                return;
-//            }
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -164,44 +162,138 @@ public class FileIoUtil implements DialogInterface.OnClickListener{
 
     }
 
+    public Boolean copyToOtherFiles(String parentFile_Path) {
 
-    public Boolean moveFiles() {
-        return true;
-    }
+        File fromFile;
+        File toFile;
+        parentFile_Path = parentFile_Path + File.separator;
 
-    public Boolean copyToOtherFiles() {
+        for (int i = 0; i < selectedImagesFileSet.size(); i++) {
+
+            fromFile = selectedImagesFileSet.get(i);
+            toFile = new File(parentFile_Path, fromFile.getName());
+            if (!toFile.exists()) {
+                copySingleImage(fromFile, toFile, false);
+            } else {
+                SimpleDateFormat format = new SimpleDateFormat("副本(yyyy-MM-dd-HH-mm-ss-SSS)");
+                String time = format.format(Calendar.getInstance().getTime());
+                String fileFormat = fromFile.toString().substring(fromFile.toString().lastIndexOf("."));
+                if (!(toFile.getName().matches(regular))) {
+                    toFile = new File(parentFile_Path, fromFile.getName() + "_" + time + fileFormat);
+                } else {
+                    if (fromFile.getName().matches(regular)) {
+                        String oldName = fromFile.getName().substring(0, fromFile.getName().length() - 24 - fileFormat.length());
+                        toFile = new File(parentFile_Path, oldName + "_" + time + fileFormat);
+                    }
+                }
+                copySingleImage(fromFile, toFile, false);
+            }
+        }
         return true;
+
     }
 
     public Boolean renameFiles() {
+
         getRenameDataFromDialog();
-//        newNameFromEditText;
-//        startNumberFromEditText;
-//        numDigitsFromEditText;
+
+        if (selectedImagesFileSet.size() > Math.pow(10, numDigitsFromEditText) - startNumberFromEditText) {
+            getRenameDataFromDialog();
+        }
 
         return true;
     }
 
     private void getRenameDataFromDialog() {
-
         View renameDataView = LayoutInflater.from(context).inflate(R.layout.table_dialog_data, null);
+        newName = (EditText) renameDataView.findViewById(R.id.NewNameData);
+        startNumber = (EditText) renameDataView.findViewById(R.id.startNumber);
+        numDigits = (EditText) renameDataView.findViewById(R.id.numberDigits);
         Dialog dialog = new AlertDialog.Builder(context)
                 .setView(renameDataView)
                 .setTitle("输入重命名所需数据")
-                .setPositiveButton("确定",this)
+                .setPositiveButton("确定", this)
                 .create();
-        dialog.show();
+        dialog.setCanceledOnTouchOutside(true);
 
+        if (!MULTI_SELECT){
+            startNumber.setFocusable(false);
+            startNumber.setFocusableInTouchMode(false);
+            numDigits.setFocusable(false);
+            numDigits.setFocusableInTouchMode(false);
+            Toast.makeText(context, "单个重命名只可输入新名字", Toast.LENGTH_LONG).show();
+        }
+        dialog.show();
     }
 
     @Override
     public void onClick(DialogInterface dialog, int which) {
-        View renameDataView = LayoutInflater.from(context).inflate(R.layout.table_dialog_data, null);
-        EditText newName = (EditText) renameDataView.findViewById(R.id.NewNameData);
-        EditText startNumber = (EditText) renameDataView.findViewById(R.id.startNumber);
-        EditText numDigits = (EditText) renameDataView.findViewById(R.id.numberDigits);
-        newNameFromEditText = newName.getText().toString();
-        startNumberFromEditText = startNumber.getText().toString();
-        numDigitsFromEditText = numDigits.getText().toString();
+
+
+
+        if (MULTI_SELECT){
+            if (newName.getText().toString().trim().equals("") || startNumber.getText().toString().trim().equals("") || numDigits.getText().toString().trim().equals("")) {
+                 Toast.makeText(context, "批量重命名时数据不能为空", Toast.LENGTH_LONG).show();
+                 renameFiles();
+                 return;
+            }
+            if (selectedImagesFileSet.size() > Math.pow(10, numDigitsFromEditText) - startNumberFromEditText){
+                Toast.makeText(context, "批量重命名时,编号位数不足", Toast.LENGTH_LONG).show();
+                renameFiles();
+            }
+        }else {
+            if(newName.getText().toString().trim().equals("")){
+                Toast.makeText(context, "单文件重命名，新名字不可为空", Toast.LENGTH_LONG).show();
+                renameFiles();
+                return;
+            }
+        }
+
+        if (MULTI_SELECT) {
+            newNameFromEditText = newName.getText().toString();
+            startNumberFromEditText = Integer.valueOf(startNumber.getText().toString());
+            numDigitsFromEditText = Integer.valueOf(numDigits.getText().toString());
+            renameOperate();
+        }
+        if (!MULTI_SELECT){
+            newNameFromEditText = newName.getText().toString();
+            renameSingleFile();
+        }
+    }
+
+    private void renameOperate() {
+
+        //重命名操作
+        for (int i = 0; i < selectedImagesFileSet.size(); i++) {
+            File image = selectedImagesFileSet.get(i);
+            String parent_Path = image.getParent() + File.separator;
+            String imageFormat = image.toString().substring(image.toString().lastIndexOf("."));
+            String numFormat = "";
+            for (int j = 0; j < numDigitsFromEditText; j++) {
+                numFormat = numFormat + "0";
+            }
+            java.text.DecimalFormat df = new java.text.DecimalFormat(numFormat);
+            String newName = new String(newNameFromEditText + df.format(startNumberFromEditText) + imageFormat);
+            File newFileName = new File(parent_Path + newName);
+            image.renameTo(newFileName);
+            startNumberFromEditText++;
+
+            Uri uri = Uri.fromFile(newFileName);
+            context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
+        }
+    }
+
+    public void renameSingleFile() {
+
+        File image = selectedImagesFileSet.get(0);
+        String imageFormat = image.toString().substring(image.toString().lastIndexOf("."));
+        String parent_Path = image.getParent() + File.separator;
+        String newName = new String(newNameFromEditText+ imageFormat);
+        File newFileName = new File(parent_Path + newName);
+        image.renameTo(newFileName);
+
+        //广播通知还有问题
+        Uri uri = Uri.fromFile(newFileName);
+        context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
     }
 }

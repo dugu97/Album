@@ -27,6 +27,7 @@ import com.example.album.Adapter.GridViewAdapter;
 import com.example.album.R;
 import com.example.album.Util.FileIoUtil;
 import com.example.album.Util.ImageDataUtil;
+import com.example.album.bean.ListViewItem;
 
 import java.io.File;
 import java.io.Serializable;
@@ -48,8 +49,13 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
     private String firstImagePathString;
     private ImageDataUtil imageDataUtil = new ImageDataUtil(this);
     private Map<Integer, Boolean> mSelectMap = new HashMap<Integer, Boolean>();
+
+    private String OtherAlbumPath;
+
     private final static int DELETE_RESULT_OK = 1;
     private final static int COPY_TO_THIS_FILE = 2;
+    private final static int COPY_TO_OTHER_FILE = 3;
+    private final static int RENAME_RESULT_OK = 4;
 
 
     @Override
@@ -155,24 +161,52 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
 
     public void chooseOperateFromDialog() {
 
-        final String[] operateSets = new String[]{"重命名", "复制到当前相册", "复制到其它相册", "删除"};
+        String[] operateSets = new String[]{"重命名", "复制到当前相册", "复制到其它相册", "删除"};
         Dialog dialog = new AlertDialog.Builder(this)
                 .setItems(operateSets, this).create();
         dialog.show();
     }
 
+    private void chooseAlbumFromDialog() {
+
+        ImageDataUtil imageDataUtil = new ImageDataUtil(this);
+        ListViewItem[] items = imageDataUtil.getListViewAdapterData();
+
+        String[] operateSets = new String[items.length];
+        final String[] operateSetImagePath = new String[items.length];
+        for (int i = 0; i < items.length; i++) {
+            operateSets[i] = items[i].getBucket_Name() + " (存有" + items[i].getPhoto_Num() + "张照片)";
+            operateSetImagePath[i] = items[i].getFirstImagePath();
+        }
+
+        Dialog dialog = new AlertDialog.Builder(this)
+                .setItems(operateSets, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        OtherAlbumPath = operateSetImagePath[which];  //初始化otherAlbum的路径
+                        FileOperateInUI(COPY_TO_OTHER_FILE);
+                        dialog.dismiss();
+                    }
+                }).create();
+        dialog.show();
+
+    }
+
+    private void renameOperate(){
+        fileIoUtil.renameFiles();
+    }
+
     @Override
     public void onClick(DialogInterface dialog, int which) {
-
-        final String[] operateSets = new String[]{"重命名", "复制到当前相册", "复制到其它相册", "删除"};
+        String[] operateSets = new String[]{"重命名", "复制到当前相册", "复制到其它相册", "删除"};
         if (operateSets[which].equals("重命名")) {
-            fileIoUtil.renameFiles();
+            renameOperate();
+        }
+        if (operateSets[which].equals("复制到其它相册")) {
+            chooseAlbumFromDialog();
         }
         if (operateSets[which].equals("复制到当前相册")) {
             FileOperateInUI(COPY_TO_THIS_FILE);
-        }
-        if (operateSets[which].equals("复制到其它相册")) {
-            fileIoUtil.copyToOtherFiles();
         }
         if (operateSets[which].equals("删除")) {
             FileOperateInUI(DELETE_RESULT_OK);
@@ -180,11 +214,9 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
 
     }
 
-    private void FileOperateInUI(int flag) {
+    private void FileOperateInUI(final int flag) {
 
-        final ProgressDialog progressDialog = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
-        progressDialog.setCancelable(false);
-        progressDialog.setTitle("正在执行操作 ");
+        final ProgressDialog progressDialog = showProgressDialog();
         progressDialog.show();
 
         final Handler handler = new Handler() {
@@ -194,35 +226,75 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
                 if (msg.what == DELETE_RESULT_OK) {
                     progressDialog.dismiss();
                     reFleshActivity();
-                }else if (msg.what == COPY_TO_THIS_FILE){
+                } else if (flag == COPY_TO_OTHER_FILE) {
+                    progressDialog.dismiss();
+                    goToOtherAlbum(OtherAlbumPath);
+                } else if (flag == RENAME_RESULT_OK) {
                     progressDialog.dismiss();
                     reFleshActivity();
+                } else {
+                    if (msg.what == COPY_TO_THIS_FILE) {
+                        progressDialog.dismiss();
+                        reFleshActivity();
+                    }
                 }
             }
         };
 
-        if (flag == DELETE_RESULT_OK) {
+        if (flag == COPY_TO_THIS_FILE) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    if (fileIoUtil.deleteFiles()) {
-                        handler.sendEmptyMessage(DELETE_RESULT_OK);
-                    }
-                }
-            }).start();
-        }else if (flag == COPY_TO_THIS_FILE){
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    if (fileIoUtil.copyToThisFiles()){
+                    if (fileIoUtil.copyToThisFiles()) {
                         handler.sendEmptyMessage(COPY_TO_THIS_FILE);
                     }
                 }
             }).start();
+        } else if (flag == COPY_TO_OTHER_FILE) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    File file = new File(OtherAlbumPath);
+                    String copyToOtherAlbumPath = file.getParent() + File.separator;
+                    if (fileIoUtil.copyToOtherFiles(copyToOtherAlbumPath)) {
+                        handler.sendEmptyMessage(COPY_TO_OTHER_FILE);
+                    }
+                }
+            }).start();
+        } else if (flag == RENAME_RESULT_OK) {
+            if (fileIoUtil.renameFiles()) {
+                handler.sendEmptyMessage(COPY_TO_OTHER_FILE);
+            }
+        } else {
+            if (flag == DELETE_RESULT_OK) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (fileIoUtil.deleteFiles()) {
+                            handler.sendEmptyMessage(DELETE_RESULT_OK);
+                        }
+                    }
+                }).start();
+            }
         }
+
     }
 
-    private void reFleshActivity(){
+    private void goToOtherAlbum(String firstImagePath) {
+        Intent intent = new Intent(this, GridViewActivity.class);
+        intent.putExtra("firstImagePath", firstImagePath);
+        startActivity(intent);
+        overridePendingTransition(R.anim.zoom_out, R.anim.zoom_in);
+    }
+
+    private ProgressDialog showProgressDialog() {
+        ProgressDialog progressDialog = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
+        progressDialog.setCancelable(false);
+        progressDialog.setTitle("正在执行操作 ");
+        return progressDialog;
+    }
+
+    private void reFleshActivity() {
         Intent intent = new Intent(GridViewActivity.this, GridViewActivity.class);
         intent.putExtra("firstImagePath", firstImagePathString);
         startActivity(intent);
