@@ -55,7 +55,8 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
     private final static int DELETE_RESULT_OK = 1;
     private final static int COPY_TO_THIS_FILE = 2;
     private final static int COPY_TO_OTHER_FILE = 3;
-    private final static int RENAME_RESULT_OK = 4;
+
+    public static GridViewActivity gridViewActivityFinish = null;  //用于在FileIoUtil类里finish掉当前activity;
 
 
     @Override
@@ -73,6 +74,7 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
         gridView.setOnItemClickListener(this);
         gridView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE_MODAL);
         gridView.setMultiChoiceModeListener(this);
+        gridViewActivityFinish = this;
     }
 
     public void initGridViewAdapter() {
@@ -155,7 +157,11 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
             return;
         }
         getSelectedImagesFileSet();
-        fileIoUtil = new FileIoUtil(this, selectedImagesFileSet);
+        if (mSelectMap.containsKey(0)) {
+            fileIoUtil = new FileIoUtil(this, selectedImagesFileSet);
+        }else{
+            fileIoUtil = new FileIoUtil(this, selectedImagesFileSet);
+        }
         chooseOperateFromDialog();
     }
 
@@ -192,15 +198,11 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
 
     }
 
-    private void renameOperate(){
-        fileIoUtil.renameFiles();
-    }
-
     @Override
     public void onClick(DialogInterface dialog, int which) {
         String[] operateSets = new String[]{"重命名", "复制到当前相册", "复制到其它相册", "删除"};
         if (operateSets[which].equals("重命名")) {
-            renameOperate();
+            fileIoUtil.renameFiles();
         }
         if (operateSets[which].equals("复制到其它相册")) {
             chooseAlbumFromDialog();
@@ -225,17 +227,14 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
                 super.handleMessage(msg);
                 if (msg.what == DELETE_RESULT_OK) {
                     progressDialog.dismiss();
-                    reFleshActivity();
+                    reFleshGridViewActivity(firstImagePathString);
                 } else if (flag == COPY_TO_OTHER_FILE) {
                     progressDialog.dismiss();
                     goToOtherAlbum(OtherAlbumPath);
-                } else if (flag == RENAME_RESULT_OK) {
-                    progressDialog.dismiss();
-                    reFleshActivity();
                 } else {
                     if (msg.what == COPY_TO_THIS_FILE) {
                         progressDialog.dismiss();
-                        reFleshActivity();
+                        reFleshGridViewActivity(firstImagePathString);
                     }
                 }
             }
@@ -261,10 +260,6 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
                     }
                 }
             }).start();
-        } else if (flag == RENAME_RESULT_OK) {
-            if (fileIoUtil.renameFiles()) {
-                handler.sendEmptyMessage(COPY_TO_OTHER_FILE);
-            }
         } else {
             if (flag == DELETE_RESULT_OK) {
                 new Thread(new Runnable() {
@@ -285,16 +280,17 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
         intent.putExtra("firstImagePath", firstImagePath);
         startActivity(intent);
         overridePendingTransition(R.anim.zoom_out, R.anim.zoom_in);
+        this.finish();
     }
 
-    private ProgressDialog showProgressDialog() {
+    public ProgressDialog showProgressDialog() {
         ProgressDialog progressDialog = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
         progressDialog.setCancelable(false);
         progressDialog.setTitle("正在执行操作 ");
         return progressDialog;
     }
 
-    private void reFleshActivity() {
+    public void reFleshGridViewActivity(String firstImagePathString) {
         Intent intent = new Intent(GridViewActivity.this, GridViewActivity.class);
         intent.putExtra("firstImagePath", firstImagePathString);
         startActivity(intent);
