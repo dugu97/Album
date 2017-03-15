@@ -54,7 +54,6 @@ public class FileIoUtil {
     private final int RENAME_FILES = 1;
     private final int RENAME_SINGLE_FILE = 2;
     private final int DISMISS_PROGRESS_DIALOG = 3;
-    private String firstImagePath;
 
 
     public FileIoUtil(final Context context, List<File> selectedImagesFileSet) {
@@ -93,9 +92,7 @@ public class FileIoUtil {
                 } else {
                     if (msg.what == DISMISS_PROGRESS_DIALOG) {
                         progressDialog.dismiss();
-                        GridViewActivity.gridViewActivityFinish.finish();
-                        GridViewActivity.gridViewActivityFinish.reFleshGridViewActivity(firstImagePath);
-                        Toast.makeText(context,"请返回进行刷新",Toast.LENGTH_SHORT).show();
+                        GridViewActivity.gridViewActivityReflesh.reFleshGridViewActivity();
                     }
                 }
             }
@@ -333,10 +330,6 @@ public class FileIoUtil {
             String newName = new String(newNameFromEditText + df.format(startNum) + imageFormat);
             File newFileName = new File(parent_Path + newName);
 
-            if (i == 0){
-                firstImagePath = newFileName.toString();
-            }
-
             copySingleImage(image,newFileName,false);
 
             startNum++;
@@ -360,8 +353,6 @@ public class FileIoUtil {
         String parent_Path = image.getParent() + File.separator;
         String newName = new String(newNameFromEditText + imageFormat);
         File newFileName = new File(parent_Path + newName);
-
-        firstImagePath = newFileName.toString();
 
         copySingleImage(image,newFileName,false);
 

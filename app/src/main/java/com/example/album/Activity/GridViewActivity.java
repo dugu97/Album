@@ -56,7 +56,7 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
     private final static int COPY_TO_THIS_FILE = 2;
     private final static int COPY_TO_OTHER_FILE = 3;
 
-    public static GridViewActivity gridViewActivityFinish = null;  //用于在FileIoUtil类里finish掉当前activity;
+    public static GridViewActivity gridViewActivityReflesh = null;  //用于在FileIoUtil类里finish掉当前activity;
 
 
     @Override
@@ -74,7 +74,7 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
         gridView.setOnItemClickListener(this);
         gridView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE_MODAL);
         gridView.setMultiChoiceModeListener(this);
-        gridViewActivityFinish = this;
+        gridViewActivityReflesh = this;
     }
 
     public void initGridViewAdapter() {
@@ -228,14 +228,14 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
                 super.handleMessage(msg);
                 if (msg.what == DELETE_RESULT_OK) {
                     progressDialog.dismiss();
-                    reFleshGridViewActivity(firstImagePathString);
+                    reFleshGridViewActivity();
                 } else if (flag == COPY_TO_OTHER_FILE) {
                     progressDialog.dismiss();
                     goToOtherAlbum(OtherAlbumPath);
                 } else {
                     if (msg.what == COPY_TO_THIS_FILE) {
                         progressDialog.dismiss();
-                        reFleshGridViewActivity(firstImagePathString);
+                        reFleshGridViewActivity();
                     }
                 }
             }
@@ -291,7 +291,7 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
         return progressDialog;
     }
 
-    public void reFleshGridViewActivity(String firstImagePathString) {
+    public void reFleshGridViewActivity() {
         Intent intent = new Intent(GridViewActivity.this, GridViewActivity.class);
         intent.putExtra("firstImagePath", firstImagePathString);
         startActivity(intent);

@@ -20,7 +20,6 @@ public class ListView_MainActivity extends Activity implements AdapterView.OnIte
     ListView listView;
     ListViewAdapter listViewAdapter;
     ListViewItem[] items;
-    public static ListView_MainActivity listView_mainActivity = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +37,6 @@ public class ListView_MainActivity extends Activity implements AdapterView.OnIte
         listView.setLayoutAnimation(layoutAnimationController);
         listView.startLayoutAnimation();
         listView.setOnItemClickListener(this);
-        listView_mainActivity = this;
     }
 
     @Override
@@ -60,13 +58,6 @@ public class ListView_MainActivity extends Activity implements AdapterView.OnIte
         intent.putExtra("firstImagePath",firstImagePath);
         startActivity(intent);
         overridePendingTransition(R.anim.zoom_out, R.anim.zoom_in);
-        finish();
-    }
-
-    public void reFleshToGridView(String firstImagePathString){
-        Intent intent = new Intent(ListView_MainActivity.this,GridViewActivity.class);
-        intent.putExtra("firstImagePath",firstImagePathString);
-        startActivity(intent);
         finish();
     }
 }
