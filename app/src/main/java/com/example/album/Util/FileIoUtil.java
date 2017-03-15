@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.album.Activity.GridViewActivity;
+import com.example.album.ProgressDialog.SuccinctProgress;
 import com.example.album.R;
 
 import java.io.File;
@@ -91,7 +92,7 @@ public class FileIoUtil {
                     }).start();
                 } else {
                     if (msg.what == DISMISS_PROGRESS_DIALOG) {
-                        progressDialog.dismiss();
+                        SuccinctProgress.dismiss();
                         GridViewActivity.gridViewActivityRefresh.reFleshGridViewActivity();
                     }
                 }
@@ -137,7 +138,7 @@ public class FileIoUtil {
                 continue;
             }
             if (fromFile.getName().matches(regular)) {
-                String oldName = fromFile.getName().substring(0, fromFile.getName().length() - 24 - fileFormat.length());
+                String oldName = fromFile.getName().substring(0, fromFile.getName().length() - 28 - fileFormat.length());
                 toFile = new File(parentFile_Path, oldName + "_" + time + fileFormat);
                 copySingleImage(fromFile, toFile, false);
             }
@@ -279,7 +280,7 @@ public class FileIoUtil {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
-                        showProgressDialog();
+                        SuccinctProgress.showSuccinctProgress(context, "执行操作中");
 
                         if (MULTI_SELECT) {
 

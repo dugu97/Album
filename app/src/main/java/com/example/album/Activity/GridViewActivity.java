@@ -3,7 +3,6 @@ package com.example.album.Activity;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.album.Adapter.GridViewAdapter;
+import com.example.album.ProgressDialog.SuccinctProgress;
 import com.example.album.R;
 import com.example.album.Util.FileIoUtil;
 import com.example.album.Util.ImageDataUtil;
@@ -219,22 +219,24 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
 
     private void FileOperateInUI(final int flag) {
 
-        final ProgressDialog progressDialog = showProgressDialog();
-        progressDialog.show();
+//        final ProgressDialog progressDialog = showProgressDialog();
+//        progressDialog.show();
+
+        SuccinctProgress.showSuccinctProgress(this, "执行操作中");
 
         final Handler handler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
                 if (msg.what == DELETE_RESULT_OK) {
-                    progressDialog.dismiss();
+                    SuccinctProgress.dismiss();
                     reFleshGridViewActivity();
                 } else if (flag == COPY_TO_OTHER_FILE) {
-                    progressDialog.dismiss();
+                    SuccinctProgress.dismiss();
                     goToOtherAlbum(OtherAlbumPath);
                 } else {
                     if (msg.what == COPY_TO_THIS_FILE) {
-                        progressDialog.dismiss();
+                        SuccinctProgress.dismiss();
                         reFleshGridViewActivity();
                     }
                 }
@@ -282,13 +284,6 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
         startActivity(intent);
         overridePendingTransition(R.anim.zoom_out, R.anim.zoom_in);
         this.finish();
-    }
-
-    public ProgressDialog showProgressDialog() {
-        ProgressDialog progressDialog = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
-        progressDialog.setCancelable(false);
-        progressDialog.setTitle("正在执行操作 ");
-        return progressDialog;
     }
 
     public void reFleshGridViewActivity() {
