@@ -203,6 +203,7 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
         String[] operateSets = new String[]{"重命名", "复制到当前相册", "复制到其它相册", "删除"};
         if (operateSets[which].equals("重命名")) {
             fileIoUtil.renameFiles();
+            myAdapter.notifyDataSetChanged();
         }
         if (operateSets[which].equals("复制到其它相册")) {
             chooseAlbumFromDialog();

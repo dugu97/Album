@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.album.Activity.GridViewActivity;
 import com.example.album.R;
 
 import java.io.File;
@@ -92,6 +93,8 @@ public class FileIoUtil {
                 } else {
                     if (msg.what == DISMISS_PROGRESS_DIALOG) {
                         progressDialog.dismiss();
+                        GridViewActivity.gridViewActivityFinish.finish();
+                        GridViewActivity.gridViewActivityFinish.reFleshGridViewActivity(firstImagePath);
                         Toast.makeText(context,"请返回进行刷新",Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -334,7 +337,8 @@ public class FileIoUtil {
                 firstImagePath = newFileName.toString();
             }
 
-            image.renameTo(newFileName);
+            copySingleImage(image,newFileName,false);
+
             startNum++;
 
             Uri uri = Uri.fromFile(newFileName);
@@ -359,7 +363,7 @@ public class FileIoUtil {
 
         firstImagePath = newFileName.toString();
 
-        image.renameTo(newFileName);
+        copySingleImage(image,newFileName,false);
 
         //广播通知还有问题
         Uri uri = Uri.fromFile(newFileName);
