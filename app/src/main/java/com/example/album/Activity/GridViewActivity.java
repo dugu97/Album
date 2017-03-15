@@ -56,7 +56,7 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
     private final static int COPY_TO_THIS_FILE = 2;
     private final static int COPY_TO_OTHER_FILE = 3;
 
-    public static GridViewActivity gridViewActivityReflesh = null;  //用于在FileIoUtil类里finish掉当前activity;
+    public static GridViewActivity gridViewActivityRefresh = null;  //用于在FileIoUtil类里finish掉当前activity;
 
 
     @Override
@@ -74,7 +74,7 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
         gridView.setOnItemClickListener(this);
         gridView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE_MODAL);
         gridView.setMultiChoiceModeListener(this);
-        gridViewActivityReflesh = this;
+        gridViewActivityRefresh = this;
     }
 
     public void initGridViewAdapter() {

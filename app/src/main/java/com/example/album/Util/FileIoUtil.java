@@ -92,7 +92,7 @@ public class FileIoUtil {
                 } else {
                     if (msg.what == DISMISS_PROGRESS_DIALOG) {
                         progressDialog.dismiss();
-                        GridViewActivity.gridViewActivityReflesh.reFleshGridViewActivity();
+                        GridViewActivity.gridViewActivityRefresh.reFleshGridViewActivity();
                     }
                 }
             }
@@ -146,6 +146,25 @@ public class FileIoUtil {
             return true;
         else
             return false;
+    }
+
+    public Boolean copyPhotoFromCamera() {
+        SimpleDateFormat format = new SimpleDateFormat("(yyyy-MM-dd-HH-mm-ss-SSS)");
+        String time;
+        File fromFile;
+        String fileFormat;
+        File toFile;
+        String parentFile_Path;
+
+        time = format.format(Calendar.getInstance().getTime());
+        fromFile = selectedImagesFileSet.get(0);
+        parentFile_Path = fromFile.getParentFile().toString() + File.separator;
+        fileFormat = fromFile.toString().substring(fromFile.toString().lastIndexOf("."));
+
+        toFile = new File(parentFile_Path, "Camera TakeIn" + time + fileFormat);
+        copySingleImage(fromFile, toFile, false);
+        deleteFiles();
+        return true;
     }
 
     public void copySingleImage(File fromFile, final File toFile, Boolean rewrite) {
@@ -330,7 +349,7 @@ public class FileIoUtil {
             String newName = new String(newNameFromEditText + df.format(startNum) + imageFormat);
             File newFileName = new File(parent_Path + newName);
 
-            copySingleImage(image,newFileName,false);
+            copySingleImage(image, newFileName, false);
 
             startNum++;
 
@@ -354,7 +373,7 @@ public class FileIoUtil {
         String newName = new String(newNameFromEditText + imageFormat);
         File newFileName = new File(parent_Path + newName);
 
-        copySingleImage(image,newFileName,false);
+        copySingleImage(image, newFileName, false);
 
         //广播通知还有问题
         Uri uri = Uri.fromFile(newFileName);
