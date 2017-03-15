@@ -333,7 +333,7 @@ public class FileIoUtil {
     private Boolean renameOperate() {
 
         int startNum = startNumberFromEditText;
-        //重命名操作
+//      重命名操作
         for (int i = 0; i < selectedImagesFileSet.size(); i++) {
             File image = selectedImagesFileSet.get(i);
             String parent_Path = image.getParent() + File.separator;
