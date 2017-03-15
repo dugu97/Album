@@ -12,6 +12,7 @@ import android.widget.AdapterViewFlipper;
 
 import com.example.album.Adapter.AdapterViewFlipperAdapter;
 import com.example.album.R;
+import com.example.album.Service.MyMusicService;
 
 import java.io.File;
 import java.util.List;
@@ -30,6 +31,7 @@ public class AdapterViewFlipperActivity extends Activity implements View.OnTouch
         public boolean onSingleTapUp(MotionEvent e) {
             if (adapterViewFlipper.isFlipping()) {
                 adapterViewFlipper.stopFlipping();
+                stopMusic();
             }
             return super.onSingleTapUp(e);
         }
@@ -48,6 +50,7 @@ public class AdapterViewFlipperActivity extends Activity implements View.OnTouch
         public boolean onDoubleTap(MotionEvent e) {
             if (!adapterViewFlipper.isFlipping()) {
                 adapterViewFlipper.startFlipping();
+                startMusic();
             }
             return super.onDoubleTap(e);
         }
@@ -86,5 +89,23 @@ public class AdapterViewFlipperActivity extends Activity implements View.OnTouch
     public boolean onTouch(View v, MotionEvent event) {
         myGestureDetector.onTouchEvent(event);
         return true;
+    }
+
+    private void startMusic(){
+        Intent intent = new Intent();
+        intent.setClass(AdapterViewFlipperActivity.this, MyMusicService.class);
+        startService(intent);
+    }
+
+    private void stopMusic(){
+        Intent intent = new Intent();
+        intent.setClass(AdapterViewFlipperActivity.this, MyMusicService.class);
+        stopService(intent);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        stopMusic();
     }
 }

@@ -21,6 +21,7 @@
         </activity>
         <activity android:name=".Activity.GridViewActivity"></activity>
         <activity android:name=".Activity.AdapterViewFlipperActivity"></activity>
+        <service android:name=".Service.MyMusicService" android:enabled="true"/>
     </application>
 
 </manifest>
