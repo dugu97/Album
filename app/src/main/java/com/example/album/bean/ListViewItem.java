@@ -22,24 +22,12 @@ public class ListViewItem implements Comparable<ListViewItem> {
         return bucket_Name;
     }
 
-    public void setBucket_Name(String bucket_Name) {
-        this.bucket_Name = bucket_Name;
-    }
-
     public String getPhoto_Num() {
         return photo_Num;
     }
 
-    public void setPhoto_Num(String photo_Num) {
-        this.photo_Num = photo_Num;
-    }
-
     public String getFirstImagePath() {
         return firstImagePath;
-    }
-
-    public void setFirstImagePath(String firstImagePath) {
-        this.firstImagePath = firstImagePath;
     }
 
     //ListViewItem按照图片数目从高到底排序，目录按照字符串从大到小排序

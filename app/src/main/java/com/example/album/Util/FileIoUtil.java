@@ -143,10 +143,7 @@ public class FileIoUtil {
                 copySingleImage(fromFile, toFile, false);
             }
         }
-        if (i == selectedImagesFileSet.size())
-            return true;
-        else
-            return false;
+        return i == selectedImagesFileSet.size();
     }
 
     public Boolean copyPhotoFromCamera() {

@@ -19,7 +19,7 @@ public class MyMusicService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        mp = MediaPlayer.create(this, R.raw.Snowdreams);
+        mp = MediaPlayer.create(this, R.raw.snowdreams);
         mp.setLooping(true);
     }
 

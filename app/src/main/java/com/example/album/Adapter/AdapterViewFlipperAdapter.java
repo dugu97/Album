@@ -84,7 +84,7 @@ public class AdapterViewFlipperAdapter extends BaseAdapter {
 
     private class ViewHolder{
         ImageView imageView;
-        public ViewHolder(View convertView){
+        private ViewHolder(View convertView){
             imageView = (ImageView) convertView.findViewById(R.id.showImageView);
             imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         }

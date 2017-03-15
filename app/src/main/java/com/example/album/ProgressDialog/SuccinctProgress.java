@@ -44,12 +44,7 @@ public class SuccinctProgress {
 
 	public static boolean isShowing() {
 
-		if (pd != null && pd.isShowing()) {
-
-			return true;
-		}
-		return false;
-
+		return pd != null && pd.isShowing();
 	}
 
 	public static void dismiss() {

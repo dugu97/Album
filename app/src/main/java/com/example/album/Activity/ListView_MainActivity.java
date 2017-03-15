@@ -33,7 +33,6 @@ public class ListView_MainActivity extends Activity implements AdapterView.OnIte
     private String firstImagePath;
 
     public static final int TAKE_PHOTO = 1;
-    public static final int CROP_PHOTO = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
