@@ -20,7 +20,6 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.album.Adapter.GridViewAdapter;
 import com.example.album.ProgressDialog.SuccinctProgress;
@@ -92,7 +91,7 @@ public class GridViewActivity extends Activity implements AdapterView.OnItemClic
         intent.putExtra("onClickImagePosition", position);
         intent.putExtra("folderImages", (Serializable) folderImages);
         intent.putExtra("firstImagePath", firstImagePathString);
-        Toast.makeText(this, mSelectMap.toString(), Toast.LENGTH_LONG).show();
+//        Toast.makeText(this, mSelectMap.toString(), Toast.LENGTH_LONG).show();
         startActivity(intent);
         overridePendingTransition(R.anim.zoom_in, R.anim.zoom_out);
     }
