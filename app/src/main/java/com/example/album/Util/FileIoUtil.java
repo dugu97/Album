@@ -71,12 +71,12 @@ public class FileIoUtil {
         handler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
+                SuccinctProgress.showSuccinctProgress(context, "执行操作中");
                 super.handleMessage(msg);
                 if (msg.what == RENAME_FILES) {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            SuccinctProgress.showSuccinctProgress(context, "执行操作中");
                             renameOperate();
                         }
                     }).start();
@@ -85,7 +85,6 @@ public class FileIoUtil {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            SuccinctProgress.showSuccinctProgress(context, "执行操作中");
                             renameSingleFile();
                         }
                     }).start();

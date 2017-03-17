@@ -63,6 +63,8 @@ public class AdapterViewFlipperAdapter extends BaseAdapter {
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
+
+        //基于gif的优化
         if (getItem(position).toString().endsWith(".gif")){
             Glide.with(context)
                     .load((File) getItem(position)).asGif()
