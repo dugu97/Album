@@ -1,4 +1,4 @@
-package com.example.album.Activity;
+package com.example.album.activity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -11,9 +11,9 @@ import android.view.WindowManager;
 import android.widget.AdapterViewFlipper;
 import android.widget.Toast;
 
-import com.example.album.Adapter.AdapterViewFlipperAdapter;
+import com.example.album.adapter.AdapterViewFlipperAdapter;
 import com.example.album.R;
-import com.example.album.Service.MyMusicService;
+import com.example.album.service.MyMusicService;
 
 import java.io.File;
 import java.util.List;

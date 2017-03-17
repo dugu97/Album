@@ -1,4 +1,4 @@
-package com.example.album.Service;
+package com.example.album.service;
 
 import android.app.Service;
 import android.content.Intent;

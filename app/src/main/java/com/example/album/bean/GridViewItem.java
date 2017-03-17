@@ -11,7 +11,7 @@ import android.widget.RelativeLayout;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.album.R;
-import com.example.album.Util.ImageDataUtil;
+import com.example.album.util.ImageDataUtil;
 
 import java.io.File;
 

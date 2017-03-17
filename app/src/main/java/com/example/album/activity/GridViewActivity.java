@@ -1,4 +1,4 @@
-package com.example.album.Activity;
+package com.example.album.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -21,11 +21,11 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.TextView;
 
-import com.example.album.Adapter.GridViewAdapter;
-import com.example.album.ProgressDialog.SuccinctProgress;
+import com.example.album.adapter.GridViewAdapter;
+import com.example.album.progress.SuccinctProgress;
 import com.example.album.R;
-import com.example.album.Util.FileIoUtil;
-import com.example.album.Util.ImageDataUtil;
+import com.example.album.util.FileIoUtil;
+import com.example.album.util.ImageDataUtil;
 import com.example.album.bean.ListViewItem;
 
 import java.io.File;

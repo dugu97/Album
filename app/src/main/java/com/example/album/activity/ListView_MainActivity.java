@@ -1,4 +1,4 @@
-package com.example.album.Activity;
+package com.example.album.activity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -13,10 +13,10 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.album.Adapter.ListViewAdapter;
+import com.example.album.adapter.ListViewAdapter;
 import com.example.album.R;
-import com.example.album.Util.FileIoUtil;
-import com.example.album.Util.ImageDataUtil;
+import com.example.album.util.FileIoUtil;
+import com.example.album.util.ImageDataUtil;
 import com.example.album.bean.ListViewItem;
 
 import java.io.File;

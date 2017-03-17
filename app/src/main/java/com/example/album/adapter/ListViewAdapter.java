@@ -1,4 +1,4 @@
-package com.example.album.Adapter;
+package com.example.album.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;

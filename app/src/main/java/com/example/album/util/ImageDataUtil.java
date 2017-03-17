@@ -1,4 +1,4 @@
-package com.example.album.Util;
+package com.example.album.util;
 
 import android.content.Context;
 import android.content.res.Resources;

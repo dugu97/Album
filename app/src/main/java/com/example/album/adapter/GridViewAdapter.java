@@ -1,4 +1,4 @@
-package com.example.album.Adapter;
+package com.example.album.adapter;
 
 import android.content.Context;
 import android.view.View;
@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 
-import com.example.album.Util.ImageDataUtil;
+import com.example.album.util.ImageDataUtil;
 import com.example.album.bean.GridViewItem;
 
 import java.io.File;
