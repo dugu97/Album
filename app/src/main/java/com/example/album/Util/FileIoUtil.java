@@ -2,7 +2,6 @@ package com.example.album.Util;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -51,7 +50,6 @@ public class FileIoUtil {
     private EditText numDigits;
 
     private final Handler handler;
-    private ProgressDialog progressDialog;
     private final int RENAME_FILES = 1;
     private final int RENAME_SINGLE_FILE = 2;
     private final int DISMISS_PROGRESS_DIALOG = 3;
@@ -69,7 +67,6 @@ public class FileIoUtil {
                 this.MULTI_SELECT = false;
             }
         }
-        progressDialog = new ProgressDialog(context, ProgressDialog.STYLE_SPINNER);
 
         handler = new Handler() {
             @Override
@@ -79,6 +76,7 @@ public class FileIoUtil {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
+                            SuccinctProgress.showSuccinctProgress(context, "执行操作中");
                             renameOperate();
                         }
                     }).start();
@@ -87,6 +85,7 @@ public class FileIoUtil {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
+                            SuccinctProgress.showSuccinctProgress(context, "执行操作中");
                             renameSingleFile();
                         }
                     }).start();
@@ -256,12 +255,6 @@ public class FileIoUtil {
         getRenameDataFromDialog();
     }
 
-    private void showProgressDialog() {
-        progressDialog.setCancelable(false);
-        progressDialog.setTitle("正在执行操作 ");
-        progressDialog.show();
-    }
-
     private void getRenameDataFromDialog() {
 
         final View renameDataView = LayoutInflater.from(context).inflate(R.layout.table_dialog_data, null);
@@ -276,8 +269,6 @@ public class FileIoUtil {
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
-                        SuccinctProgress.showSuccinctProgress(context, "执行操作中");
 
                         if (MULTI_SELECT) {
 

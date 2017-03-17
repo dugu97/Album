@@ -25,7 +25,6 @@
         <TextView
             android:text="起始编号："
             android:layout_weight="1"
-            android:digits="0123456789"
             android:textSize="15sp"
             android:gravity="center"
             />
@@ -51,6 +50,7 @@
         <EditText
             android:id="@+id/numberDigits"
             android:layout_height="wrap_content"
+            android:digits="0123456789"
             android:maxLines="1"
             android:layout_weight="8"
             android:hint="(选填)"/>

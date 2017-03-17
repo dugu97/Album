@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -77,8 +76,8 @@ public class AdapterViewFlipperAdapter extends BaseAdapter {
                     .centerCrop().animate(R.anim.showimage_zoom_in)
                     .into(viewHolder.imageView);
         }
-        String s = position + "";
-        Toast.makeText(context,s,Toast.LENGTH_SHORT).show();
+//        String s = position + "";
+//        Toast.makeText(context,s,Toast.LENGTH_SHORT).show();
         return convertView;
     }
 

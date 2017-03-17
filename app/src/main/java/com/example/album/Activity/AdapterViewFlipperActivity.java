@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterViewFlipper;
+import android.widget.Toast;
 
 import com.example.album.Adapter.AdapterViewFlipperAdapter;
 import com.example.album.R;
@@ -17,12 +18,16 @@ import com.example.album.Service.MyMusicService;
 import java.io.File;
 import java.util.List;
 
-public class AdapterViewFlipperActivity extends Activity implements View.OnTouchListener {
+public class AdapterViewFlipperActivity extends Activity implements View.OnTouchListener{
 
     private List<File> folderImages;
+
     private int onClickImagePosition;
+    private int presentImagePosition;
+
     private AdapterViewFlipperAdapter myAdapter;
     private AdapterViewFlipper adapterViewFlipper;
+
     private GestureDetector myGestureDetector;
 
     class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
@@ -54,6 +59,12 @@ public class AdapterViewFlipperActivity extends Activity implements View.OnTouch
             }
             return super.onDoubleTap(e);
         }
+
+        @Override
+        public void onLongPress(MotionEvent e) {
+            Toast.makeText(AdapterViewFlipperActivity.this,folderImages.get(presentImagePosition).getName(),Toast.LENGTH_LONG).show();
+            super.onLongPress(e);
+        }
     }
 
     @Override
@@ -73,16 +84,25 @@ public class AdapterViewFlipperActivity extends Activity implements View.OnTouch
     public void initAdapterViewFlipperAdapter() {
         Intent intent = getIntent();
         onClickImagePosition = intent.getIntExtra("onClickImagePosition", 0);
+        presentImagePosition = onClickImagePosition;
         folderImages = (List<File>) intent.getSerializableExtra("folderImages");
         myAdapter = new AdapterViewFlipperAdapter(this, folderImages, onClickImagePosition);
     }
 
     private void showPreviousImage() {
         adapterViewFlipper.showPrevious();
+        presentImagePosition --;
+        if (presentImagePosition == -1){
+            presentImagePosition = folderImages.size() - 1;
+        }
     }
 
     private void showNextImage() {
         adapterViewFlipper.showNext();
+        presentImagePosition ++;
+        if (presentImagePosition ==  folderImages.size()){
+            presentImagePosition = 0;
+        }
     }
 
     @Override
